@@ -1,8 +1,12 @@
+import java.io.Console;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import chessBoard.ChessBoard;
 import chessBoard.Coord;
 import chessBoard.Move;
+import chessBoard.Player;
+import chessBoard.Position;
 
 
 public class Test {
@@ -10,15 +14,44 @@ public class Test {
 	public static void main(String[] args) {
 		ChessBoard cb = new ChessBoard();
 		cb.initializeBoard();
+		Player nextPlayer = Player.PLAYER1;
+				
+//		while(true) {
+//			System.out.println(cb.toString());
+//			Move nextMove = getMove(nextPlayer);
+//			cb.receiveMove(nextMove);
+//			
+//			if (nextPlayer == Player.PLAYER1)
+//				nextPlayer = Player.PLAYER2;
+//			else
+//				nextPlayer = Player.PLAYER1;
+//		}
 		
-		//Move movePawn = new Move(new Coord(6,1), new Coord(5,1));
-		//cb.makeMove(movePawn);
-		
-		for (int i = 7; i > 2; i--) {
-			Move movePawn = new Move(new Coord(i,4), new Coord(i-1,4));
-			cb.validateAndApply(movePawn);
-		}
-		
+		//for testing what moves are available to a piece
+		Position[][] board = cb.getBoard();
+		ArrayList<Move> moves = board[7][4].getPiece().getMoves(cb, new Coord(7,4));
 		System.out.println(cb.toString());
+		for(int i=0; i < moves.size(); i++)
+			System.out.println(moves.get(i).toString());
+		
+	}
+	
+	//method just for testing - reads in move from user by console
+	public static Move getMove(Player player) {
+		System.out.println("Player " + player.ordinal() + " enter a move");
+		
+		Scanner scanner = new Scanner(System.in);
+		System.out.println("Enter starting row, hit enter, then col");
+		int fromRow = scanner.nextInt();
+		int fromCol= scanner.nextInt();
+		
+		System.out.println("Enter ending row, hit enter, then col");
+		int toRow = scanner.nextInt();
+		int toCol= scanner.nextInt();
+		
+		Coord fromCoord = new Coord(fromRow, fromCol);
+		Coord toCoord = new Coord(toRow, toCol);
+		
+		return new Move(fromCoord, toCoord);
 	}
 }

@@ -18,6 +18,10 @@ public class Move {
 		return toPos;
 	}
 	
+	public String toString() {
+		return fromPos.toString() + " to " + toPos.toString();
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		boolean isEqual= false;

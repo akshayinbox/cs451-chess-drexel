@@ -5,14 +5,11 @@ import java.util.ArrayList;
 import chessPieces.King;
 import chessPieces.Pawn;
 import chessPieces.PieceID;
+import chessPieces.Rook;
 
 
 public class ChessBoard {
 
-	//TODO: enum?
-	//public static final String ownKing = "K1";
-	//public static final String opposingPawn = "P2";
-	
 	private Position[][] board;
 	
 	public ChessBoard() {
@@ -33,11 +30,15 @@ public class ChessBoard {
 		for (int i = 0; i < 8; i++)
 			board[1][i].addPiece(new Pawn(Player.PLAYER2));
 		
+		//initialize rooks
+		board[7][0].addPiece(new Rook(Player.PLAYER1));
+		board[7][7].addPiece(new Rook(Player.PLAYER1));
+		board[0][0].addPiece(new Rook(Player.PLAYER2));
+		board[0][7].addPiece(new Rook(Player.PLAYER2));
+		
 		//initialize kings
 		board[7][4].addPiece(new King(Player.PLAYER1));
 		board[0][4].addPiece(new King(Player.PLAYER2));
-		
-		board[6][4].clearPiece();
 	}
 	
 	public Position[][] cloneBoard() {
@@ -62,7 +63,7 @@ public class ChessBoard {
 		Position fromPosition = board[fromCoord.getRow()][fromCoord.getCol()];
 		Position toPosition = board[toCoord.getRow()][toCoord.getCol()];
 		
-		Code returnCode = fromPosition.getPiece().moveTo(toCoord);
+		Code returnCode = fromPosition.getPiece().moveCode(fromCoord,toCoord);
 		//TODO:
 		//if (returnCode == Code.CASTLE_LEFT)
 		//if (returnCode == Code.CASTLE_RIGHT)
@@ -119,7 +120,7 @@ public class ChessBoard {
 //		
 //	}
 	
-	private boolean kingInCheck(Position[][] board) {
+	public boolean kingInCheck(Position[][] board) {
 		
 		int row = 0, col = 0;
 		
@@ -158,7 +159,14 @@ public class ChessBoard {
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		
+		sb.append("   ");
+		for (int i = 0; i < 8; i++) 
+			sb.append("  " + i);
+		
+		sb.append('\n');
+		
 		for (int i = 0; i < 8; i++) {
+			sb.append(" " + i + "  ");
 			for (int j = 0; j < 8; j++) {
 				sb.append(board[i][j].toString() + " ");
 			}

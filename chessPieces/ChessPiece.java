@@ -17,7 +17,7 @@ public abstract class ChessPiece {
 		this.player = player;
 	}
 	
-	public Code moveTo(Coord coord) {
+	public Code moveCode(Coord from, Coord to) {
 		return Code.SUCCESS;
 	}
 	
@@ -27,6 +27,10 @@ public abstract class ChessPiece {
 	
 	public PieceID getID() {
 		return id;
+	}
+	
+	public String toString() {
+		return id.getName() + player.ordinal();
 	}
 	
 	public abstract ChessPiece clone();

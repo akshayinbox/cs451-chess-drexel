@@ -3,6 +3,7 @@ package chessPieces;
 import java.util.ArrayList;
 
 import chessBoard.ChessBoard;
+import chessBoard.Code;
 import chessBoard.Coord;
 import chessBoard.Move;
 import chessBoard.Player;
@@ -10,18 +11,17 @@ import chessBoard.Position;
 
 
 public class King extends ChessPiece {
+	
+	private boolean hasMoved;
 
 	public King(Player player) {
 		super(player);
+		hasMoved = false;
 		id = PieceID.KING;
 	}
 	
 	public King clone() {
 		return new King(player);
-	}
-	
-	public String toString() {
-		return "K" + player.ordinal();
 	}
 
 	public ArrayList<Move> getMoves(ChessBoard cb, Coord cord) {
@@ -47,7 +47,7 @@ public class King extends ChessPiece {
 			moves.add(new Move(cord, new Coord(row, col-1)));
 		
 		if (cb.validPosition(row, col+1) && board[row][col+1].isEmptyOrEnemy())
-			moves.add(new Move(cord, new Coord(row, col)));
+			moves.add(new Move(cord, new Coord(row, col+1)));
 		
 		if (cb.validPosition(row+1, col) && board[row+1][col].isEmptyOrEnemy())
 			moves.add(new Move(cord, new Coord(row+1, col)));	
@@ -57,8 +57,57 @@ public class King extends ChessPiece {
 		
 		if (cb.validPosition(row+1, col+1) && board[row+1][col+1].isEmptyOrEnemy())
 			moves.add(new Move(cord, new Coord(row+1, col+1)));
+		
+		/* You can only castle if:
+		 * 1. The king has not moved.
+		 * 2. The rook in question has not moved.
+		 * 3. There are no pieces inbetween king and said rook.
+		 * 4. The king is not in check.
+		 * 5. The position the king skips over would not put him in check.
+		 * 6. The new position would not put the king in check.
+		 */
+		if (!cb.kingInCheck(board) && !hasMoved) {
+			
+			//check left rook
+			if (board[7][0].isOwnType(PieceID.ROOK)) {
+				
+				boolean empty1 = board[7][1].isEmpty();
+			    boolean empty2 = board[7][2].isEmpty();
+			    boolean empty3 = board[7][3].isEmpty();
+				
+				Rook left = (Rook) board[7][0].getPiece();
+				boolean rookMoved = left.hasMoved();
+				
+				if(empty1 && empty2 && empty3 && !rookMoved)
+					moves.add(new Move(cord, new Coord(row, col-2)));
+			}
+			
+			//check right rook
+			if (board[7][0].isOwnType(PieceID.ROOK)) {
+				
+				boolean empty1 = board[7][5].isEmpty();
+			    boolean empty2 = board[7][6].isEmpty();
+				
+				Rook right = (Rook) board[7][7].getPiece();
+				boolean rookMoved = right.hasMoved();
+				
+				if(empty1 && empty2 && !rookMoved)
+					moves.add(new Move(cord, new Coord(row, col+2)));
+			}
+		}
 
 		return moves;
+	}
+	
+	public Code moveCode(Coord from, Coord to) {
+		hasMoved = true;
+		
+		if (from.getRow() - to.getRow() == 2)
+			return Code.CASTLE_RIGHT;
+		else if (from.getRow() - to.getRow() == -2)
+			return Code.CASTLE_LEFT;
+		else
+			return Code.SUCCESS;
 	}
 	
 }

@@ -29,10 +29,6 @@ public class Pawn extends ChessPiece {
 	public Pawn clone() {
 		return new Pawn(player, hasMoved);
 	}
-	
-	public PieceID getID() {
-		return id;
-	}
 		
 	public ArrayList<Move> getMoves(ChessBoard cb, Coord cord) {
 		ArrayList<Move> moves = new ArrayList<Move>();
@@ -60,19 +56,13 @@ public class Pawn extends ChessPiece {
 		return moves;
 	}
 	
-	public Code moveTo(Coord coord) {
-		//this.coord = coord;
+	public Code moveCode(Coord from, Coord to) {
 		hasMoved = true;
 		
-		if (coord.getRow() == 0)
+		if (to.getRow() == 0)
 			return Code.PROMOTION;
 		else
 			return Code.SUCCESS;
 	}
 	
-	public String toString() {
-		return "P" + player.ordinal();
-	}
-
-
 }

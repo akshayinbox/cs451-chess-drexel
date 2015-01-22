@@ -13,6 +13,10 @@ public class Coord {
 		return new Coord(row, col);
 	}
 	
+	public String toString() {
+		return row + "," + col;
+	}
+	
 	public int getRow() {
 		return row;
 	}
