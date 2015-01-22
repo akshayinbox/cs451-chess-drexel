@@ -2,9 +2,12 @@ package chessBoard;
 
 import java.util.ArrayList;
 
+import chessPieces.Bishop;
 import chessPieces.King;
+import chessPieces.Knight;
 import chessPieces.Pawn;
 import chessPieces.PieceID;
+import chessPieces.Queen;
 import chessPieces.Rook;
 
 
@@ -36,6 +39,22 @@ public class ChessBoard {
 		board[0][0].addPiece(new Rook(Player.PLAYER2));
 		board[0][7].addPiece(new Rook(Player.PLAYER2));
 		
+		//initialize knights
+		board[7][1].addPiece(new Knight(Player.PLAYER1));
+		board[7][6].addPiece(new Knight(Player.PLAYER1));
+		board[0][1].addPiece(new Knight(Player.PLAYER2));
+		board[0][6].addPiece(new Knight(Player.PLAYER2));
+		
+		//initialize bishops
+		board[7][2].addPiece(new Bishop(Player.PLAYER1));
+		board[7][5].addPiece(new Bishop(Player.PLAYER1));
+		board[0][2].addPiece(new Bishop(Player.PLAYER2));
+		board[0][5].addPiece(new Bishop(Player.PLAYER2));
+		
+		//initialize queens
+		board[7][3].addPiece(new Queen(Player.PLAYER1));
+		board[0][3].addPiece(new Queen(Player.PLAYER2));
+		
 		//initialize kings
 		board[7][4].addPiece(new King(Player.PLAYER1));
 		board[0][4].addPiece(new King(Player.PLAYER2));
@@ -56,7 +75,7 @@ public class ChessBoard {
 		applyMove(opponentMove, board);
 	}
 	
-	//apply move to board, use returncode to handle special cases
+	//apply move to board, use return code to handle special cases
 	public Code applyMove(Move move, Position[][] board) {
 		Coord fromCoord = move.getFrom();
 		Coord toCoord = move.getTo();
@@ -64,9 +83,20 @@ public class ChessBoard {
 		Position toPosition = board[toCoord.getRow()][toCoord.getCol()];
 		
 		Code returnCode = fromPosition.getPiece().moveCode(fromCoord,toCoord);
-		//TODO:
-		//if (returnCode == Code.CASTLE_LEFT)
-		//if (returnCode == Code.CASTLE_RIGHT)
+
+		//check if castle was applied and update rook
+		if (returnCode == Code.CASTLE_LEFT) {
+			Position rookFrom = board[fromCoord.getRow()][0];
+			Position rookTo = board[fromCoord.getRow()][3];
+			rookTo.addPiece(rookFrom.getPiece());
+			rookFrom.clearPiece();
+		}
+		else if (returnCode == Code.CASTLE_RIGHT) {
+			Position rookFrom = board[fromCoord.getRow()][7];
+			Position rookTo = board[fromCoord.getRow()][5];
+			rookTo.addPiece(rookFrom.getPiece());
+			rookFrom.clearPiece();
+		}
 		
 		toPosition.addPiece(fromPosition.getPiece());
 		fromPosition.clearPiece();

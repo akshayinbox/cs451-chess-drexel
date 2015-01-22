@@ -77,7 +77,7 @@ public class Position {
 	}
 	
 	public boolean isEnemy() {
-		return piece.getPlayer() == Player.PLAYER2;
+		return piece == null || piece.getPlayer() == Player.PLAYER2;
 	}
 	
 	public String toString() {

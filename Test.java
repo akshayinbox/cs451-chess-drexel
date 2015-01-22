@@ -3,6 +3,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import chessBoard.ChessBoard;
+import chessBoard.Code;
 import chessBoard.Coord;
 import chessBoard.Move;
 import chessBoard.Player;
@@ -16,23 +17,37 @@ public class Test {
 		cb.initializeBoard();
 		Player nextPlayer = Player.PLAYER1;
 				
-//		while(true) {
-//			System.out.println(cb.toString());
-//			Move nextMove = getMove(nextPlayer);
-//			cb.receiveMove(nextMove);
-//			
-//			if (nextPlayer == Player.PLAYER1)
-//				nextPlayer = Player.PLAYER2;
-//			else
-//				nextPlayer = Player.PLAYER1;
-//		}
+		while(true) {
+			System.out.println(cb.toString());
+			Move nextMove = getMove(nextPlayer);
+			
+			//chessboard only needs to validate own moves by player1.
+			//assume opponent's input is correct
+			if (nextPlayer == Player.PLAYER1) {
+				
+				Code moveCode = cb.validateAndApply(nextMove);
+				while (moveCode == Code.NOT_LEGAL) {
+					System.out.println("Invalid move, try again.");
+					nextMove = getMove(nextPlayer);
+					moveCode = cb.validateAndApply(nextMove);
+				}
+				
+			}	
+			else
+				cb.receiveMove(nextMove);
+			
+			if (nextPlayer == Player.PLAYER1)
+				nextPlayer = Player.PLAYER2;
+			else
+				nextPlayer = Player.PLAYER1;
+		}
 		
 		//for testing what moves are available to a piece
-		Position[][] board = cb.getBoard();
-		ArrayList<Move> moves = board[7][4].getPiece().getMoves(cb, new Coord(7,4));
-		System.out.println(cb.toString());
-		for(int i=0; i < moves.size(); i++)
-			System.out.println(moves.get(i).toString());
+//		Position[][] board = cb.getBoard();
+//		ArrayList<Move> moves = board[7][4].getPiece().getMoves(cb, new Coord(7,4));
+//		System.out.println(cb.toString());
+//		for(int i=0; i < moves.size(); i++)
+//			System.out.println(moves.get(i).toString());
 		
 	}
 	

@@ -1,7 +1,7 @@
 package chessPieces;
 
 public enum PieceID {
-	PAWN("P"),ROOK("R"), KING("A");
+	PAWN("P"), ROOK("R"), KNIGHT("K"), BISHOP("B"), QUEEN("Q"), KING("A");
 	
     private String id;
 	

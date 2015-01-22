@@ -78,7 +78,14 @@ public class King extends ChessPiece {
 				Rook left = (Rook) board[7][0].getPiece();
 				boolean rookMoved = left.hasMoved();
 				
-				if(empty1 && empty2 && empty3 && !rookMoved)
+				//check if position king is moving through would put in check
+				Position[][] boardClone = cb.cloneBoard();
+				Coord kingFrom = new Coord(7, 4);
+				Coord kingThrough = new Coord(7, 3);
+				cb.applyMove(new Move(kingFrom, kingThrough), boardClone);
+				boolean inCheckThrough = cb.kingInCheck(boardClone);
+				
+				if(empty1 && empty2 && empty3 && !rookMoved && !inCheckThrough)
 					moves.add(new Move(cord, new Coord(row, col-2)));
 			}
 			
@@ -91,7 +98,14 @@ public class King extends ChessPiece {
 				Rook right = (Rook) board[7][7].getPiece();
 				boolean rookMoved = right.hasMoved();
 				
-				if(empty1 && empty2 && !rookMoved)
+				//check if position king is moving through would put in check
+				Position[][] boardClone = cb.cloneBoard();
+				Coord kingFrom = new Coord(0, 4);
+				Coord kingThrough = new Coord(0, 5);
+				cb.applyMove(new Move(kingFrom, kingThrough), boardClone);
+				boolean inCheckThrough = cb.kingInCheck(boardClone);
+				
+				if(empty1 && empty2 && !rookMoved && !inCheckThrough)
 					moves.add(new Move(cord, new Coord(row, col+2)));
 			}
 		}
@@ -102,10 +116,10 @@ public class King extends ChessPiece {
 	public Code moveCode(Coord from, Coord to) {
 		hasMoved = true;
 		
-		if (from.getRow() - to.getRow() == 2)
-			return Code.CASTLE_RIGHT;
-		else if (from.getRow() - to.getRow() == -2)
+		if (from.getCol() - to.getCol() == 2)
 			return Code.CASTLE_LEFT;
+		else if (from.getCol() - to.getCol() == -2)
+			return Code.CASTLE_RIGHT;
 		else
 			return Code.SUCCESS;
 	}

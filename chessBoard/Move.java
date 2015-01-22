@@ -24,13 +24,16 @@ public class Move {
 	
 	@Override
 	public boolean equals(Object obj) {
-		boolean isEqual= false;
 
 	    if (obj != null && obj instanceof Move) {
 	    	Move other = (Move) obj;
 	    	
+	    	//TODO: see if the coords are equal instead of this
+	    	//need to override equals for Coord object
 	    	if (other.getFrom().getRow() == this.getFrom().getRow() &&
-	    		other.getFrom().getCol() == this.getFrom().getCol())
+	    		other.getFrom().getCol() == this.getFrom().getCol() &&
+	    		other.getTo().getRow() == this.getTo().getRow() &&
+	    		other.getTo().getCol() == this.getTo().getCol())
 	    		return true;
 	    }
 
