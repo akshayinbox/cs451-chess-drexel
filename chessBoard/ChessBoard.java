@@ -117,7 +117,7 @@ public class ChessBoard {
 			return Code.NOT_LEGAL;
 		
 		//can't move enemy piece
-		if (!toPosition.isEmpty() && toPosition.getPiece().getPlayer() == Player.PLAYER2) 
+		if (!fromPosition.isEmpty() && fromPosition.getPiece().getPlayer() == Player.PLAYER2) 
 			return Code.NOT_LEGAL;
 		
 		//check if legal move
