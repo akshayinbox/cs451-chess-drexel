@@ -20,32 +20,31 @@ public class Knight extends ChessPiece {
 	}
 	
 	public ArrayList<Move> getMoves(ChessBoard cb, Coord cord) {
-		ArrayList<Move> moves = new ArrayList<Move>();
-		
 		Position[][] board = cb.getBoard();
+		ArrayList<Move> moves = new ArrayList<Move>();
 		
 		int row = cord.getRow();
 		int col = cord.getCol();
 		
 		//check all 8 positions, TODO: generate the 1,2 permutations 
-		if (cb.validPosition(row-1, col-2) && board[row-1][col-2].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row-1, col-2) && board[row-1][col-2].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row-1, col-2)));
-		if (cb.validPosition(row-1, col+2) && board[row-1][col+2].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row-1, col+2) && board[row-1][col+2].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row-1, col+2)));	
 		
-		if (cb.validPosition(row+1, col-2) && board[row+1][col-2].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row+1, col-2) && board[row+1][col-2].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row+1, col-2)));	
-		if (cb.validPosition(row+1, col+2) && board[row+1][col+2].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row+1, col+2) && board[row+1][col+2].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row+1, col+2)));	
 			
-		if (cb.validPosition(row-2, col+1) && board[row-2][col+1].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row-2, col+1) && board[row-2][col+1].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row-2, col+1)));	
-		if (cb.validPosition(row-2, col-1) && board[row-2][col-1].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row-2, col-1) && board[row-2][col-1].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row-2, col-1)));	
 			
-		if (cb.validPosition(row+2, col+1) && board[row+2][col+1].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row+2, col+1) && board[row+2][col+1].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row+2, col+1)));	
-		if (cb.validPosition(row+2, col-1) && board[row+2][col-1].isEmptyOrEnemy());
+		if (ChessBoard.validPosition(row+2, col-1) && board[row+2][col-1].isEmptyOrEnemy(player))
 			moves.add(new Move(cord, new Coord(row+2, col-1)));	
 			
 		return moves;

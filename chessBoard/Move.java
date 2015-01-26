@@ -30,10 +30,7 @@ public class Move {
 	    	
 	    	//TODO: see if the coords are equal instead of this
 	    	//need to override equals for Coord object
-	    	if (other.getFrom().getRow() == this.getFrom().getRow() &&
-	    		other.getFrom().getCol() == this.getFrom().getCol() &&
-	    		other.getTo().getRow() == this.getTo().getRow() &&
-	    		other.getTo().getCol() == this.getTo().getCol())
+	    	if (other.getFrom().equals(fromPos) && other.getTo().equals(toPos))
 	    		return true;
 	    }
 

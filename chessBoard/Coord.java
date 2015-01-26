@@ -25,4 +25,17 @@ public class Coord {
 		return col;
 	}
 	
+	@Override
+	public boolean equals(Object obj) {
+
+	    if (obj != null && obj instanceof Coord) {
+	    	Coord other = (Coord) obj;
+	    	
+	    	if (other.getRow() == row && other.getCol() == col)
+	    		return true;
+	    }
+	    
+	    return false;
+	}
+	
 }

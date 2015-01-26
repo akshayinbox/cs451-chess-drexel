@@ -30,42 +30,54 @@ public class Rook extends ChessPiece {
 	}
 		
 	public ArrayList<Move> getMoves(ChessBoard cb, Coord cord) {
-		ArrayList<Move> moves = new ArrayList<Move>();
 		Position[][] board = cb.getBoard();
+		ArrayList<Move> moves = new ArrayList<Move>();
 
 		int row = cord.getRow();
 		int col = cord.getCol();
 		
 		//check row to left
 		for (int c = col-1; c >= 0; c--) {
-			if (board[row][c].isEmptyOrEnemy())
+			if (board[row][c].isEmpty())
 				moves.add(new Move(cord, new Coord(row, c)));
-			else
-				break; //encountered own piece
+			else {
+				if (board[row][c].isEnemy(player)) 
+					moves.add(new Move(cord, new Coord(row, c)));
+				break; //encountered own piece or enemy piece
+			}
 		}
 		
 		//check row to right
 		for (int c = col+1; c < 8; c++) {
-			if (board[row][c].isEmptyOrEnemy())
+			if (board[row][c].isEmpty())
 				moves.add(new Move(cord, new Coord(row, c)));
-			else
-				break; //encountered own piece
+			else {
+				if (board[row][c].isEnemy(player)) 
+					moves.add(new Move(cord, new Coord(row, c)));
+				break; //encountered own piece or enemy piece
+			}
 		}
 		
 		//check column to north
 		for (int r = row-1; r >= 0; r--) {
-			if (board[r][col].isEmptyOrEnemy())
+			if (board[r][col].isEmpty())
 				moves.add(new Move(cord, new Coord(r, col)));
-			else
-				break; //encountered own piece
+			else {
+				if (board[r][col].isEnemy(player)) 
+					moves.add(new Move(cord, new Coord(r, col)));
+				break; //encountered own piece or enemy piece
+			}
 		}
 		
 		//check column to south
 		for (int r = row+1; r < 8; r++) {
-			if (board[r][col].isEmptyOrEnemy())
+			if (board[r][col].isEmpty())
 				moves.add(new Move(cord, new Coord(r, col)));
-			else
-				break; //encountered own piece
+			else {
+				if (board[r][col].isEnemy(player)) 
+					moves.add(new Move(cord, new Coord(r, col)));
+				break; //encountered own piece or enemy piece
+			}
 		}
 		
 		return moves;
@@ -75,7 +87,7 @@ public class Rook extends ChessPiece {
 		return hasMoved;
 	}
 	
-	public Code moveCode(Coord from, Coord to) {
+	public Code moveCode(ChessBoard cb, Coord from, Coord to) {
 		hasMoved = true;
 		return Code.SUCCESS;
 	}

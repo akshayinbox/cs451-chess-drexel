@@ -7,6 +7,7 @@ import chessBoard.Code;
 import chessBoard.Coord;
 import chessBoard.Move;
 import chessBoard.Player;
+import chessBoard.Position;
 
 public abstract class ChessPiece {
 
@@ -17,7 +18,7 @@ public abstract class ChessPiece {
 		this.player = player;
 	}
 	
-	public Code moveCode(Coord from, Coord to) {
+	public Code moveCode(ChessBoard cb, Coord from, Coord to) {
 		return Code.SUCCESS;
 	}
 	
@@ -35,6 +36,6 @@ public abstract class ChessPiece {
 	
 	public abstract ChessPiece clone();
 	
-	public abstract ArrayList<Move> getMoves(ChessBoard cb, Coord cord);
+	public abstract ArrayList<Move> getMoves(ChessBoard board, Coord cord);
 	
 }

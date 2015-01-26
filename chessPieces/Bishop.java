@@ -15,7 +15,6 @@ public class Bishop extends ChessPiece {
 	
 	public Bishop(Player player) {
 		super(player);
-		hasMoved = false;
 		id = PieceID.BISHOP;
 	}
 	
@@ -30,59 +29,58 @@ public class Bishop extends ChessPiece {
 	}
 		
 	public ArrayList<Move> getMoves(ChessBoard cb, Coord cord) {
-		ArrayList<Move> moves = new ArrayList<Move>();
 		Position[][] board = cb.getBoard();
+		ArrayList<Move> moves = new ArrayList<Move>();
 
 		int row = cord.getRow();
 		int col = cord.getCol();
+		int c, r; //Indices for current row/column in below for loops
 		
 		//check north-west diagonal
-		int r = row - 1;
-		for (int c = col-1; c >= 0 && r >= 0; c--, r--) {
-			if (board[row][c].isEmptyOrEnemy())
-				moves.add(new Move(cord, new Coord(row, c)));
-			else
-				break; //encountered own piece
+		for (c = col-1, r = row - 1; c >= 0 && r >= 0; c--, r--) {
+			if (board[r][c].isEmpty())
+				moves.add(new Move(cord, new Coord(r, c)));
+			else {
+				if (board[r][c].isEnemy(player))
+					moves.add(new Move(cord, new Coord(r, c)));
+				break; //encountered a piece, stop walking
+			}
 		}
 		
 		//check north-east diagonal
-		r = row - 1;
-		for (int c = col+1; c < 8 && r >= 0; c++, r--) {
-			if (board[row][c].isEmptyOrEnemy())
-				moves.add(new Move(cord, new Coord(row, c)));
-			else
-				break; //encountered own piece
+		for (r = row - 1, c = col+1; c < 8 && r >= 0; c++, r--) {
+			if (board[r][c].isEmpty())
+				moves.add(new Move(cord, new Coord(r, c)));
+			else {
+				if (board[r][c].isEnemy(player))
+					moves.add(new Move(cord, new Coord(r, c)));
+				break; //encountered a piece, stop walking
+			}
 		}
 		
 		//check south-west diagonal
-		r = row + 1;
-		for (int c = col-1; c >= 0 && r < 8; c--, r++) {
-			if (board[row][c].isEmptyOrEnemy())
-				moves.add(new Move(cord, new Coord(row, c)));
-			else
-				break; //encountered own piece
+		for (r = row + 1, c = col-1; c >= 0 && r < 8; c--, r++) {
+			if (board[r][c].isEmpty())
+				moves.add(new Move(cord, new Coord(r, c)));
+			else {
+				if (board[r][c].isEnemy(player))
+					moves.add(new Move(cord, new Coord(r, c)));
+				break; //encountered a piece, stop walking
+			}
 		}
 		
 		//check south-east diagonal
-		r = row + 1;
-		for (int c = col+1; c < 8 && r < 8; c++, r++) {
-			if (board[row][c].isEmptyOrEnemy())
-				moves.add(new Move(cord, new Coord(row, c)));
-			else
-				break; //encountered own piece
+		for (r = row + 1, c = col+1; c < 8 && r < 8; c++, r++) {
+			if (board[r][c].isEmpty())
+				moves.add(new Move(cord, new Coord(r, c)));
+			else {
+				if (board[r][c].isEnemy(player))
+					moves.add(new Move(cord, new Coord(r, c)));
+				break; //encountered a piece, stop walking
+			}
 		}
 		
-		
 		return moves;
-	}
-	
-	public boolean hasMoved() {
-		return hasMoved;
-	}
-	
-	public Code moveCode(Coord from, Coord to) {
-		hasMoved = true;
-		return Code.SUCCESS;
 	}
 	
 }

@@ -72,12 +72,16 @@ public class Position {
 		return piece == null;
 	}
 	
-	public boolean isEmptyOrEnemy() {
-		return isEmpty() || isEnemy();
+	public boolean isFriendly(Player player) {
+		return piece != null && piece.getPlayer() == player;
 	}
 	
-	public boolean isEnemy() {
-		return piece == null || piece.getPlayer() == Player.PLAYER2;
+	public boolean isEmptyOrEnemy(Player player) {
+		return isEmpty() || isEnemy(player);
+	}
+	
+	public boolean isEnemy(Player player) {
+		return piece != null && piece.getPlayer() != player;
 	}
 	
 	public String toString() {

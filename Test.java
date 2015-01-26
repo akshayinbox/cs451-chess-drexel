@@ -19,6 +19,14 @@ public class Test {
 				
 		while(true) {
 			System.out.println(cb.toString());
+			
+			if (nextPlayer == Player.PLAYER1) {
+				if (cb.gameOver()) {
+					System.out.println("You lost.");
+					return;
+				}
+			}
+			
 			Move nextMove = getMove(nextPlayer);
 			
 			//chessboard only needs to validate own moves by player1.

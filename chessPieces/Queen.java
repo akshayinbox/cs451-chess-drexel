@@ -38,9 +38,5 @@ public class Queen extends ChessPiece {
 		return bishopMoves;
 
 	}
-	
-	public Code moveCode(Coord from, Coord to) {
-		return Code.SUCCESS;
-	}
-	
+		
 }

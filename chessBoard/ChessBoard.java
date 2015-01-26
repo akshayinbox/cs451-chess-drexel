@@ -14,9 +14,14 @@ import chessPieces.Rook;
 public class ChessBoard {
 
 	private Position[][] board;
+	private Move opposingPreviousMove;
 	
 	public ChessBoard() {
 		board = new Position[8][8];
+	}
+	
+	public ChessBoard(ChessBoard cb) {
+		board = cloneBoard(ChessBoard.cloneBoard(cb.getBoard()));
 	}
 	
 	public void initializeBoard() {
@@ -60,7 +65,7 @@ public class ChessBoard {
 		board[0][4].addPiece(new King(Player.PLAYER2));
 	}
 	
-	public Position[][] cloneBoard() {
+	public static Position[][] cloneBoard(Position[][] board) {
 		Position[][] boardClone = new Position[8][8];
 		
 		for (int i = 0; i < 8; i++)
@@ -72,17 +77,22 @@ public class ChessBoard {
 	
 	//received move from network, we know it's valid so just make the move to the actual board
 	public void receiveMove(Move opponentMove) {
-		applyMove(opponentMove, board);
+		opposingPreviousMove = opponentMove;
+		applyMove(opponentMove);
+	}
+	
+	public Move getPreviousMove() {
+		return opposingPreviousMove;
 	}
 	
 	//apply move to board, use return code to handle special cases
-	public Code applyMove(Move move, Position[][] board) {
+	public Code applyMove(Move move) {
 		Coord fromCoord = move.getFrom();
 		Coord toCoord = move.getTo();
 		Position fromPosition = board[fromCoord.getRow()][fromCoord.getCol()];
 		Position toPosition = board[toCoord.getRow()][toCoord.getCol()];
 		
-		Code returnCode = fromPosition.getPiece().moveCode(fromCoord,toCoord);
+		Code returnCode = fromPosition.getPiece().moveCode(this, fromCoord,toCoord);
 
 		//check if castle was applied and update rook
 		if (returnCode == Code.CASTLE_LEFT) {
@@ -96,6 +106,12 @@ public class ChessBoard {
 			Position rookTo = board[fromCoord.getRow()][5];
 			rookTo.addPiece(rookFrom.getPiece());
 			rookFrom.clearPiece();
+		}
+		else if (returnCode == Code.EN_PASSANT) {
+			int rowDifference = fromPosition.getRow() - toPosition.getRow();
+			
+			Position capturedPawnPosition = board[toPosition.getRow()+rowDifference][toPosition.getCol()];
+			capturedPawnPosition.clearPiece();
 		}
 		
 		toPosition.addPiece(fromPosition.getPiece());
@@ -125,60 +141,76 @@ public class ChessBoard {
 		if (moves == null || !moves.contains(move))
 			return Code.NOT_LEGAL;
 		
-		//clone board, apply new move
-		Position[][] cloneBoard = cloneBoard();
-		Code returnCode = applyMove(move, cloneBoard);
+		//clone chess board, apply new move
+		ChessBoard cloneBoard = new ChessBoard(this);
+		Code returnCode = cloneBoard.applyMove(move);
 				
 		//check if king is moved into check, otherwise update the board to the new board
-		if (kingInCheck(cloneBoard))
+		if (cloneBoard.kingInCheck())
 			return Code.NOT_LEGAL;
 		else 
-			board = cloneBoard;
+			board = cloneBoard.getBoard();
 		
 		return returnCode;
 	}
 	
-//	private boolean gameOver() {
-//		
-//		if (!kingInCheck(board))
-//			return false;
-//		else {
-//			//check if king can get out of check
-//			
-//			//
-//		}
-//		
-//	}
-	
-	public boolean kingInCheck(Position[][] board) {
+	public boolean gameOver() {
 		
-		int row = 0, col = 0;
+		if (!kingInCheck())
+			return false;
+		else {
+			//find if any of your possible moves will get the king out of check
+			for (int r = 0; r < 8; r++) {
+				for (int c = 0; c < 8; c++) {
+					if (board[r][c].isFriendly(Player.PLAYER1)) {
+						ArrayList<Move> moves = board[r][c].getPiece().getMoves(this, new Coord(r, c));
+						for (Move move : moves) {
+							ChessBoard newBoardState = new ChessBoard(this);
+							newBoardState.applyMove(move);
+							
+							if (!newBoardState.kingInCheck())
+								return false;
+						}
+					}
+				}
+			}
+		}
+		
+		return true;
+	}
+	
+	
+	public boolean kingInCheck() {
+		Coord kingCoord = null;
 		
 		//find king's position
 		for (int r = 0; r < 8; r++) {
 			for (int c = 0; c < 8; c++) {
 				if(board[r][c].isOwnType(PieceID.KING)) {
-					row = r;
-					col = c;
+					kingCoord = new Coord(r, c);
 					break;
 				}
 			}
 		}
-
-		//
 		
-		//check if opposing pawn can capture
-		if (validPosition(row-1, col-1) && board[row-1][col-1].isOpposingType(PieceID.PAWN))
-			return true;
-		if (validPosition(row-1, col+1) && board[row-1][col+1].isOpposingType(PieceID.PAWN))
-			return true;
-		
-		//check if knight can capture.. etc, for the other piece types
-		
-		return false;
+		//find if any of opponent's pieces can capture king by going through moves
+		for (int r = 0; r < 8; r++) {
+			for (int c = 0; c < 8; c++) {
+				if (board[r][c].isEnemy(Player.PLAYER1)) {
+					ArrayList<Move> moves = board[r][c].getPiece().getMoves(this, new Coord(r, c));
+					for (Move move : moves) {
+						if (move.getTo().equals(kingCoord))
+							return true;
+					}
+				}
+			}
+		}
+	
+		return false;	
 	}
 	
-	public boolean validPosition(int row, int col) {
+	
+	public static boolean validPosition(int row, int col) {
 		return row >= 0 && row < 8 && col >=0 && col < 8; 
 	}
 	
