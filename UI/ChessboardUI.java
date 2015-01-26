@@ -58,7 +58,7 @@ public class ChessboardUI extends JPanel{
 			for (int j = 0; j < BOARD_COLS; j++) {
 				JPanel square = new JPanel();
 				square.setName(Integer.toString(j) + "," + Integer.toString(i));
-				square.setBackground(i%2 == j%2 ? DARK_BROWN : LIGHT_BROWN);
+				square.setBackground(i%2 == j%2 ? LIGHT_BROWN : DARK_BROWN);
 				PieceUI b = new PieceUI();
 				b.addMouseListener(new MouseAdapter() {
 					@Override
@@ -67,7 +67,7 @@ public class ChessboardUI extends JPanel{
 						System.out.println(m);
 						Code result = chessBoard.validateAndApply(m);
 						if (result.equals(Code.SUCCESS)) {
-							
+							System.out.println(chessBoard.toString());
 						}
 					}
 				});
@@ -83,8 +83,8 @@ public class ChessboardUI extends JPanel{
 						case 6: {b = addKnight(b, i); square.add(b); break;}
 						case 2:
 						case 5: {b = addBishop(b, i); square.add(b); break;}
-						case 3: {b = addKing(b, i); square.add(b); break;}
-						case 4: {b = addQueen(b, i); square.add(b); break;}
+						case 3: {b = addQueen(b, i); square.add(b); break;}
+						case 4: {b = addKing(b, i); square.add(b); break;}
 						}
 						break;
 					}
@@ -203,7 +203,6 @@ public class ChessboardUI extends JPanel{
 			buttonIcon = ImageIO.read(new File("pieces/WhiteQ_board.png"));
 			playerCode = Player.PLAYER1;
 		}
-		button = new PieceUI();
 		button.setIcon(new ImageIcon(buttonIcon));
 		button.setPlayer(playerCode);
 		button.setPiece(new Queen(playerCode));
@@ -220,7 +219,6 @@ public class ChessboardUI extends JPanel{
 			buttonIcon = ImageIO.read(new File("pieces/WhiteK_board.png"));
 			playerCode = Player.PLAYER1;
 		}
-		button = new PieceUI();
 		button.setIcon(new ImageIcon(buttonIcon));
 		button.setPlayer(playerCode);
 		button.setPiece(new King(playerCode));
