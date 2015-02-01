@@ -67,7 +67,7 @@ public class King extends ChessPiece {
 		 */
 		
 		//only check for castle if it's PLAYER1 since PLAYER2 is responsible for seeing if he can castle
-		if (player == Player.PLAYER1 && !cb.kingInCheck() && !hasMoved) {
+		if (player == Player.PLAYER1 && !hasMoved && !cb.kingInCheck()) {
 			
 			//check left rook
 			if (board[7][0].isOwnType(PieceID.ROOK)) {

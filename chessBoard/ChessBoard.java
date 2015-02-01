@@ -188,6 +188,7 @@ public class ChessBoard {
 			for (int c = 0; c < 8; c++) {
 				if(board[r][c].isOwnType(PieceID.KING)) {
 					kingCoord = new Coord(r, c);
+					//THIS DOESN'T BREAK OUT OF DOUBLE LOOP
 					break;
 				}
 			}

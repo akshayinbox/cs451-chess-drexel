@@ -15,6 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
@@ -27,6 +28,8 @@ import chessBoard.ChessBoard;
 
 
 public class UI {
+	private final static String USER_HOST = "Host";
+	private final static String USER_JOIN = "Join";
 	private JFrame frame;
 	private ChessboardUI board;
 	
@@ -62,10 +65,32 @@ public class UI {
 		btnConnect.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				JFrame connectFrame = new JFrame ("Connect");
-				connectFrame.getContentPane().add (new ConnectPanel());
-				connectFrame.pack();
-				connectFrame.setVisible (true);
+//				ConnectPanel.showInputDialog(new Object[]{"Connect", "Cancel"});
+				ConnectPanel connectionPanel = new ConnectPanel();
+				int result = JOptionPane.showConfirmDialog(null, connectionPanel,
+		        		"Connect", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+				if (result == JOptionPane.OK_OPTION) {
+					board.clearAllPieces();
+					if (connectionPanel.getGameType().equals(USER_HOST)) {
+						try {
+							board.addAllPieces(true);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+					else {
+						try {
+							board.addAllPieces(false);
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+					System.out.println(connectionPanel.getGameType());
+					System.out.println(connectionPanel.getTime());
+					System.out.println(connectionPanel.getID());
+				}
 			}
 		});
 		menuBar.add(btnConnect);
