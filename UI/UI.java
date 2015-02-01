@@ -25,15 +25,18 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import chessBoard.ChessBoard;
+import chessBoard.Player;
 
 
 public class UI {
 	private final static String USER_HOST = "Host";
 	private final static String USER_JOIN = "Join";
 	private JFrame frame;
-	private ChessboardUI board;
+	private ChessboardUI boardUI;
+	private ChessBoard chessBoard;
+	private boolean initialized = false;
 	
-	public UI(ChessBoard chessBoard) throws IOException {
+	public UI() throws IOException {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1000, 700);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,13 +50,21 @@ public class UI {
 		frame.getContentPane().setLayout(gridBagLayout);
 		
 		createSidePane();
-		createBoardPane(chessBoard);
+		createBoardPane();
 		
 		this.frame.setVisible(true);
 	}
 	
 	public ChessBoard getChessBoard() {
-		return board.getChessBoard();
+		return boardUI.getChessBoard();
+	}
+	
+	public void setChessboard(ChessBoard cb) {
+		chessBoard = cb;
+	}
+	
+	public boolean getInitialized() {
+		return initialized;
 	}
 	
 	private void createMenu() {
@@ -70,10 +81,11 @@ public class UI {
 				int result = JOptionPane.showConfirmDialog(null, connectionPanel,
 		        		"Connect", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 				if (result == JOptionPane.OK_OPTION) {
-					board.clearAllPieces();
+					boardUI.clearAllPieces();
 					if (connectionPanel.getGameType().equals(USER_HOST)) {
 						try {
-							board.addAllPieces(true);
+							boardUI.addAllPieces(true);
+							boardUI.setChessBoard(new ChessBoard(true));
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -81,12 +93,15 @@ public class UI {
 					}
 					else {
 						try {
-							board.addAllPieces(false);
+							boardUI.addAllPieces(false);
+							boardUI.setChessBoard(new ChessBoard(false));
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
+					boardUI.getChessBoard().initializeBoard();
+					initialized = true;
 					System.out.println(connectionPanel.getGameType());
 					System.out.println(connectionPanel.getTime());
 					System.out.println(connectionPanel.getID());
@@ -267,7 +282,7 @@ public class UI {
 		chatBorder.add(chatSendBtn, gbc_chatSendBtn);
 	}
 	
-	private void createBoardPane(ChessBoard chessBoard) throws IOException {
+	private void createBoardPane() throws IOException {
 		JPanel boardBorder = new JPanel();
 		boardBorder.setBorder(new EmptyBorder(20, 20, 20, 20));
 		GridBagConstraints gbc_boardBorder = new GridBagConstraints();
@@ -285,7 +300,7 @@ public class UI {
 		boardBorder.setBackground(new Color(219, 99, 12));
 		
 		JPanel boardPane = new JPanel(new GridLayout(8, 8, 0, 0));
-		board = new ChessboardUI(boardPane, chessBoard);
+		boardUI = new ChessboardUI(boardPane);
 		boardBorder.add(boardPane);
 	}
 }

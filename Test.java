@@ -1,7 +1,9 @@
 import java.io.Console;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
+import UI.UI;
 import chessBoard.ChessBoard;
 import chessBoard.Code;
 import chessBoard.Coord;
@@ -12,43 +14,42 @@ import chessBoard.Position;
 
 public class Test {
 
-	public static void main(String[] args) {
-		ChessBoard cb = new ChessBoard();
-		cb.initializeBoard();
+	public static void main(String[] args) throws IOException {
+//		ChessBoard cb = new ChessBoard();
+//		UI ui = new UI(cb);
+		UI ui = new UI();
+//		cb.initializeBoard();
 		Player nextPlayer = Player.PLAYER1;
-				
-		while(true) {
-			System.out.println(cb.toString());
-			
-			if (nextPlayer == Player.PLAYER1) {
-				if (cb.gameOver()) {
-					System.out.println("You lost.");
-					return;
-				}
-			}
-			
-			Move nextMove = getMove(nextPlayer);
-			
-			//chessboard only needs to validate own moves by player1.
-			//assume opponent's input is correct
-			if (nextPlayer == Player.PLAYER1) {
-				
-				Code moveCode = cb.validateAndApply(nextMove);
-				while (moveCode == Code.NOT_LEGAL) {
-					System.out.println("Invalid move, try again.");
-					nextMove = getMove(nextPlayer);
-					moveCode = cb.validateAndApply(nextMove);
-				}
-				
-			}	
-			else
-				cb.receiveMove(nextMove);
-			
-			if (nextPlayer == Player.PLAYER1)
-				nextPlayer = Player.PLAYER2;
-			else
-				nextPlayer = Player.PLAYER1;
-		}
+//		ChessBoard cb = null;
+//		while(true) {
+//			if (ui.getInitialized()) {
+//				if (cb == null) {
+//					cb = ui.getChessBoard();
+//				}
+//				System.out.println(cb.toString());
+//				Move nextMove = getMove(nextPlayer);
+//				
+//				//chessboard only needs to validate own moves by player1.
+//				//assume opponent's input is correct
+//				if (nextPlayer == Player.PLAYER1) {
+//					
+//					Code moveCode = cb.validateAndApply(nextMove);
+//					while (moveCode == Code.NOT_LEGAL) {
+//						System.out.println("Invalid move, try again.");
+//						nextMove = getMove(nextPlayer);
+//						moveCode = cb.validateAndApply(nextMove);
+//					}
+//					
+//				}	
+//				else
+//					cb.receiveMove(nextMove);
+//				
+//				if (nextPlayer == Player.PLAYER1)
+//					nextPlayer = Player.PLAYER2;
+//				else
+//					nextPlayer = Player.PLAYER1;
+//			}
+//		}
 		
 		//for testing what moves are available to a piece
 //		Position[][] board = cb.getBoard();

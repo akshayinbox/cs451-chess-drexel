@@ -45,8 +45,7 @@ public class ChessboardUI extends JPanel{
 	private final static int BOARD_ROWS = 8;
 	private final static int BOARD_COLS = 8;
 	
-	public ChessboardUI(JPanel panel, final ChessBoard chessBoard) throws IOException {
-		this.chessBoard = chessBoard;
+	public ChessboardUI(JPanel panel) throws IOException {
 		board = panel;
 		board.setBorder(new LineBorder(Color.BLACK));
 		board.setPreferredSize(new Dimension(500, 500));
@@ -60,53 +59,6 @@ public class ChessboardUI extends JPanel{
 				board.add(square);
 			}
 		}
-//		addAllPieces();
-//		for (int i = 0; i < BOARD_ROWS; i++) {
-//			for (int j = 0; j < BOARD_COLS; j++) {
-//				JPanel square = new JPanel();
-//				square.setName(Integer.toString(j) + "," + Integer.toString(i));
-//				square.setBackground(i%2 == j%2 ? LIGHT_BROWN : DARK_BROWN);
-//				square.setBorder(new EmptyBorder(5, 5, 5, 5));
-//				PieceUI b = new PieceUI();
-//				b.addMouseListener(new MouseAdapter() {
-//					@Override
-//					public void mouseReleased(MouseEvent e) {
-//						Move m = createMove(e);
-//						if (m != null) {
-//							System.out.println(m);
-//							Code result = chessBoard.validateAndApply(m);
-//							if (result.equals(Code.SUCCESS)) {
-//								uiApplyMove(e);
-//								System.out.println(chessBoard.toString());
-//							}
-//						}
-//					}
-//				});
-//				b.setBorder(BorderFactory.createEmptyBorder());
-//				b.setContentAreaFilled(false);
-//				switch(i) {
-//					case 0:
-//					case 7: {
-//						switch(j) {
-//						case 0:
-//						case 7: {b = addRook(b, i); square.add(b); break;}
-//						case 1:
-//						case 6: {b = addKnight(b, i); square.add(b); break;}
-//						case 2:
-//						case 5: {b = addBishop(b, i); square.add(b); break;}
-//						case 3: {b = addQueen(b, i); square.add(b); break;}
-//						case 4: {b = addKing(b, i); square.add(b); break;}
-//						}
-//						break;
-//					}
-//					case 1: 
-//					case 6: {b = addPawn(b, i); square.add(b); break;}
-//					
-//				}
-////				square.add(b);
-//				board.add(square);
-//			}
-//		}
 	}
 	
 	public ChessBoard getChessBoard() {
@@ -115,6 +67,10 @@ public class ChessboardUI extends JPanel{
 	
 	public JPanel getBoardUI() {
 		return this.board;
+	}
+	
+	public void setChessBoard(ChessBoard cb) {
+		this.chessBoard = cb;
 	}
 	
 	public void addAllPieces(Boolean host) throws IOException {
@@ -163,7 +119,7 @@ public class ChessboardUI extends JPanel{
 					case 6: {b = addPawn(b, i); temp = (JPanel)board.getComponent(compIndex); break;}
 					
 				}
-				System.out.println(temp);
+//				System.out.println(temp);
 				temp.add(b);
 				temp.updateUI();
 //				board.add(square);
@@ -181,6 +137,7 @@ public class ChessboardUI extends JPanel{
 				square.removeAll();
 			}
 		}
+		board.updateUI();
 	}
 	
 	private void uiApplyMove(MouseEvent e) {

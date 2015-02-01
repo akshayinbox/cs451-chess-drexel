@@ -8,5 +8,12 @@ public enum Player {
 	private Player(int code) {
 		this.code = code;
 	}
+	
+	public Player otherPlayer() {
+		if (this == Player.PLAYER1)
+			return Player.PLAYER2;
+		else
+			return Player.PLAYER1;
+	}
 
 }

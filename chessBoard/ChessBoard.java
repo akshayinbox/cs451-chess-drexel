@@ -15,9 +15,13 @@ public class ChessBoard {
 
 	private Position[][] board;
 	private Move opposingPreviousMove;
+	private boolean isHost;
+	private final static int BOARD_ROWS = 8;
+	private final static int BOARD_COLS = 8;
 	
-	public ChessBoard() {
-		board = new Position[8][8];
+	public ChessBoard(boolean host) {
+		board = new Position[BOARD_COLS][BOARD_ROWS];
+		isHost = host;
 	}
 	
 	public ChessBoard(ChessBoard cb) {
@@ -56,13 +60,23 @@ public class ChessBoard {
 		board[0][2].addPiece(new Bishop(Player.PLAYER2));
 		board[0][5].addPiece(new Bishop(Player.PLAYER2));
 		
-		//initialize queens
-		board[7][3].addPiece(new Queen(Player.PLAYER1));
-		board[0][3].addPiece(new Queen(Player.PLAYER2));
-		
-		//initialize kings
-		board[7][4].addPiece(new King(Player.PLAYER1));
-		board[0][4].addPiece(new King(Player.PLAYER2));
+		if (isHost) {
+			//initialize queens
+			board[7][3].addPiece(new Queen(Player.PLAYER1));
+			board[0][3].addPiece(new Queen(Player.PLAYER2));
+			
+			//initialize kings
+			board[7][4].addPiece(new King(Player.PLAYER1));
+			board[0][4].addPiece(new King(Player.PLAYER2));
+		} else {
+			//initialize queens
+			board[7][4].addPiece(new Queen(Player.PLAYER1));
+			board[0][4].addPiece(new Queen(Player.PLAYER2));
+			
+			//initialize kings
+			board[7][3].addPiece(new King(Player.PLAYER1));
+			board[0][3].addPiece(new King(Player.PLAYER2));
+		}
 	}
 	
 	public static Position[][] cloneBoard(Position[][] board) {
