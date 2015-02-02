@@ -20,8 +20,14 @@ public class King extends ChessPiece {
 		id = PieceID.KING;
 	}
 	
+	public King(Player player, boolean hasMoved) {
+		super(player);
+		this.hasMoved = hasMoved;
+		id = PieceID.KING;
+	}
+	
 	public King clone() {
-		return new King(player);
+		return new King(player, hasMoved);
 	}
 
 	public ArrayList<Move> getMoves(ChessBoard cb, Coord cord) {

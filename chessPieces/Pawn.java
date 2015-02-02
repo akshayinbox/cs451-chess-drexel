@@ -13,17 +13,28 @@ import chessBoard.Position;
 public class Pawn extends ChessPiece {
 
 	private boolean hasMoved;
+	private int rowDisplacement;
 	
 	public Pawn(Player player) {
 		super(player);
 		hasMoved = false;
 		id = PieceID.PAWN;
-	}
+		
+		if (player == Player.PLAYER1)
+			rowDisplacement = -1;
+		else
+			rowDisplacement = 1;
+	}	
 	
 	public Pawn(Player player, boolean hasMoved) {
 		super(player);
 		this.hasMoved = hasMoved;
 		id = PieceID.PAWN;
+		
+		if (player == Player.PLAYER1)
+			rowDisplacement = -1;
+		else
+			rowDisplacement = 1;
 	}
 	
 	public Pawn clone() {
@@ -36,26 +47,28 @@ public class Pawn extends ChessPiece {
 		
 		int row = cord.getRow();
 		int col = cord.getCol();
-		
+			
 		//one square ahead
-		if (ChessBoard.validPosition(row-1, col) && board[row-1][col].isEmpty())
-			moves.add(new Move(cord, new Coord(row-1, col)));
+		if (ChessBoard.validPosition(row+rowDisplacement, col) && board[row+rowDisplacement][col].isEmpty())
+			moves.add(new Move(cord, new Coord(row+rowDisplacement, col)));
 		
 		//TODO: Can you jump over pieces?
 		//two squares ahead
-		if (!hasMoved && ChessBoard.validPosition(row-2, col) && board[row-2][col].isEmpty())
-			moves.add(new Move(cord, new Coord(row-2, col)));
+		if (!hasMoved && ChessBoard.validPosition(row+2*rowDisplacement, col) 
+				&& board[row+2*rowDisplacement][col].isEmpty())
+			moves.add(new Move(cord, new Coord(row+2*rowDisplacement, col)));
 		
 		//attack diagonal
-		if (ChessBoard.validPosition(row-1, col-1) && board[row-1][col-1].isEnemy(player));
-			moves.add(new Move(cord, new Coord(row-1, col-1)));
-		if (ChessBoard.validPosition(row-1, col+1) && board[row-1][col+1].isEnemy(player));
-			moves.add(new Move(cord, new Coord(row-1, col+1)));	
+		if (ChessBoard.validPosition(row+rowDisplacement, col-1) && board[row+rowDisplacement][col-1].isEnemy(player));
+			moves.add(new Move(cord, new Coord(row+rowDisplacement, col-1)));
+		if (ChessBoard.validPosition(row+rowDisplacement, col+1) && board[row+rowDisplacement][col+1].isEnemy(player));
+			moves.add(new Move(cord, new Coord(row+rowDisplacement, col+1)));	
 			
-		//check for en Passant
+		//check for en Passant, only if it's player 1 as player 2 is responsible for checking if he
+		//can en passant
 		Move lastMove = cb.getPreviousMove();
-		
-		if (lastMove != null) {
+	
+		if (player == Player.PLAYER1 && lastMove != null) {
 			Coord fromPos = lastMove.getFrom();
 			Coord toPos = lastMove.getTo();
 			
