@@ -7,113 +7,114 @@ import java.io.OutputStream;
 
 import java.net.Socket;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.Queue;
 
 public class ClientHandler implements Runnable {
-	private static AtomicInteger nextID = new AtomicInteger();
-	private static Map<Integer, ClientHandler> waitingClients = new HashMap<Integer, ClientHandler>();
+	private static final int MAX_GAMES = 5;//Integer.MAX_VALUE;
+	private static final Queue<Integer> ids = new ConcurrentLinkedQueue<Integer>();
+	private static final ConcurrentMap<Integer, ClientHandler> waitingClients = new ConcurrentHashMap<Integer, ClientHandler>();
 
 	private Socket clientSocket;
-	private ObjectInputStream in;
-	private ObjectOutputStream out;
-	private Semaphore peer = new Semaphore(0);
+	private ObjectInputStream socketIn;
+	private ObjectOutputStream socketOut;
+	private ObjectOutputStream peerOut;
+	private ClientHandler peer;
+	private Semaphore peerSemaphore = new Semaphore(0);
+
+	public static void establishIDs() {
+		for (int i = 0; i <= MAX_GAMES; i++) {
+			ids.add(i);
+		}
+	}
 	
 	
-	public ClientHandler(Socket clientSocket) {
-		this.clientSocket = clientSocket;	
+	public ClientHandler(Socket clientSocket) throws IOException {
+		this.clientSocket = clientSocket;
+		this.socketIn = new ObjectInputStream(clientSocket.getInputStream());
+		this.socketOut = new ObjectOutputStream(clientSocket.getOutputStream());
 	}
 
 	@Override
 	public void run() {
 		int gameID;
 		try {
-			in = new ObjectInputStream(clientSocket.getInputStream());
-			gameID = in.readInt();
-		}
-		catch (IOException e) {
-			readError();
-			return;
-		}
+			gameID = socketIn.readInt();
 		
-		if (gameID < 0) {
-			try {
-				establishNewGame();
+			if (gameID < 0) {
+				if (!establishNewGame()) {
+					System.out.println("No more room. Quitting.");
+					socketOut.writeInt(-1);
+					socketOut.flush();
+					return;
+				}
 			}
-			catch (InterruptedException e) {
-				interruptedError();
-				return;
-			}
-		}
-		else {
-			try {
+			else {
 				joinExistingGame(gameID);
 			}
-			catch (NullPointerException e) {
-				wrongIDError();
-				return;
-			}
-			catch (IOException e) {
-				communicationError();
-				return;
-			}
-		}
 
-		try {
 			readWriteLoop();
-		}
-		catch (IOException e) {
-			communicationError();
-			return;
-		}
-		catch (ClassNotFoundException e) {
-		}
-
-		try {
+			
 			clientSocket.close();
 		}
-		catch (IOException e) {
-			socketError();
+		catch (Exception e) {
 			return;	
 		}
 	}
 
-	private void establishNewGame() throws InterruptedException {
-		int gameID = nextID.getAndIncrement();
+	private boolean establishNewGame() throws IOException, InterruptedException {
+		Integer gameID = ids.poll();
+		if (gameID == null) {
+			return false;
+		}
+		socketOut.writeInt(gameID);
+		socketOut.flush();
+
 		waitingClients.put(gameID, this);
-		System.out.println("Created gameID = " + gameID + ". Waiting for peer.");
 		waitForPeer();
-		System.out.println("ID = " + gameID + " finished waiting for peer.");
+		removeFromWaiting(gameID);
+		return true;
+	}
+
+	private void removeFromWaiting(int gameID) {
+		waitingClients.remove(gameID);
+		ids.add(gameID);
 	}
 
 	private void joinExistingGame(int gameID) throws NullPointerException, IOException {
-		out	= new ObjectOutputStream(waitingClients.get(gameID).peerArrived(clientSocket.getOutputStream()));
-		System.out.println("Game with ID = " + gameID + " joined.");
+		peer = waitingClients.get(gameID);
+		peerOut	= new ObjectOutputStream(peer.clientSocket.getOutputStream());
+		peer.peerArrived(this);
 	}
 
 	private void waitForPeer() throws InterruptedException {
-		peer.acquire();
+		peerSemaphore.acquire();
 	}
 
-	private OutputStream peerArrived(OutputStream out) throws IOException {
-		this.out = new ObjectOutputStream(out);
-		peer.release();
-		return clientSocket.getOutputStream();
+	private void peerArrived(ClientHandler other) throws IOException {
+		peer = other;
+		peerOut = new ObjectOutputStream(peer.clientSocket.getOutputStream());
+		peerSemaphore.release();
 	}
 
 	private void readWriteLoop() throws ClassNotFoundException, IOException {
-		Object obj = in.readObject();
+		Object obj = socketIn.readObject();
 		while (obj != null) {
-			out.writeObject(obj);
-			out.flush();
-			obj = in.readObject();
+			peerOut.writeObject(obj);
+			peerOut.flush();
+			obj = socketIn.readObject();
 		}
 	}
 
 	private void readError() {
 		System.out.println("Error reading from client. Client thread exiting.");
+	}
+
+	private void writeError() {
+		System.out.println("Error writing to client. Client thread exiting.");
 	}
 
 	private void interruptedError() {

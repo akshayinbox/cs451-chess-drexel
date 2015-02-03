@@ -10,7 +10,7 @@ import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
-	private static final int PORT = 9878;
+	private static final int PORT = 9879;
 
 	private static class Read implements Runnable {
 		private ObjectInputStream socketIn;
@@ -28,6 +28,7 @@ public class Client {
 				}
 			}
 			catch (Exception e) {
+				System.out.println("Read error.");
 				return;
 			}
 		}
@@ -53,6 +54,18 @@ public class Client {
 			ObjectOutputStream socketOut = new ObjectOutputStream(socket.getOutputStream());
 			socketOut.writeInt(game);
 			socketOut.flush();
+			ObjectInputStream socketIn = new ObjectInputStream(socket.getInputStream()); 
+			if (game < 0)
+			{
+				int gameID = socketIn.readInt();
+				if (gameID < 0) {
+					System.out.println("Couldn't connect (too many games). Quitting.");
+					return;
+				}
+				else {
+					System.out.println("Your game ID is: " + gameID);
+				}
+			}
 		
 			new Thread(new Read(new ObjectInputStream(socket.getInputStream()))).start();
 
