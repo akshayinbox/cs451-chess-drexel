@@ -61,6 +61,7 @@ public class ClientHandler implements Runnable {
 			clientSocket.close();
 		}
 		catch (Exception e) {
+			System.out.println("Caught an exception. Exiting.");
 			return;	
 		}
 	}
