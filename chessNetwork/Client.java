@@ -21,10 +21,13 @@ public class Client {
 		@Override
 		public void run() {
 			try {
-				String s = (String) socketIn.readObject();
-				while (s != null) {
-					System.out.println(s);
-					s = (String) socketIn.readObject();
+				Message m = (Message) socketIn.readObject();
+				while (m != null) {
+					if (m.getType() == MessageType.CHAT)
+					{
+						System.out.println((String) m.getContent());
+					}
+					m = (Message) socketIn.readObject();
 				}
 			}
 			catch (Exception e) {
@@ -72,7 +75,7 @@ public class Client {
 			Scanner in = new Scanner(System.in);
 			String s = in.nextLine();
 			while (!s.equals("end")) {
-				socketOut.writeObject(s);
+				socketOut.writeObject(new ChatMessage(s));
 				s = in.nextLine();
 			}
 			
