@@ -5,10 +5,14 @@ import java.io.Serializable;
 public class Move implements Serializable {
 
 	private Coord fromPos, toPos;
+	private Coord fromPosTranslated, toPosTranslated;
 	
 	public Move(Coord from, Coord to) {
 		this.fromPos = from;
 		this.toPos = to;
+		this.fromPosTranslated = new Coord(7 - this.fromPos.getRow(), 7 - this.fromPos.getCol());
+		this.toPosTranslated =  new Coord(7 - this.toPos.getRow(), 7 - this.toPos.getCol());
+
 	}
 	
 	public Coord getFrom() {
@@ -21,6 +25,21 @@ public class Move implements Serializable {
 	
 	public String toString() {
 		return fromPos.toString() + " to " + toPos.toString();
+	}
+	
+	public String toStringTranslated() {
+		
+		return fromPosTranslated.toString() + " to " + toPosTranslated.toString();
+	}
+	
+	public Coord getFromTranslated() {
+		return this.fromPosTranslated;
+		//return new Coord(7 - this.fromPos.getRow(), 7 - this.fromPos.getCol());
+	}
+	
+	public Coord getToTranslated() {
+		return this.toPosTranslated;
+		//return new Coord(7 - this.toPos.getRow(), 7 - this.toPos.getCol());
 	}
 	
 	@Override

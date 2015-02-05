@@ -2,3 +2,5 @@ requirements_doc/
 *.class
 *.swp
 makefile
+*.classpath
+*.project
