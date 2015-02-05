@@ -16,7 +16,13 @@ import chessBoard.Move;
 
 public class Client {
 	private static final int PORT = 9879;
-	private static final String URLs[] = new String[] { "localhost" };
+	private static final String URLs[] = new String[] {
+														"localhost",
+														"tux64-11.cs.drexel.edu",
+														"tux64-12.cs.drexel.edu",
+														"tux64-13.cs.drexel.edu",
+														"tux64-14.cs.drexel.du"
+													  };
 
 	private Socket socket;
 	private ObjectInputStream socketIn;
