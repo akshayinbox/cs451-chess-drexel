@@ -11,7 +11,9 @@ import chessBoard.Move;
 
 public class Client {
 	private static final int PORT = 9879;
-	private static final String URLs[] = new String[] { "localhost" };
+	private static final String URLs[] = new String[] { "localhost",
+   														"tux64-11.cs.drexel.edu",
+													};
 
 	private Socket socket;
 	private ObjectInputStream socketIn;
@@ -26,8 +28,6 @@ public class Client {
 			if (tryConnect(URLs[i])) {
 				socketOut = new ObjectOutputStream(socket.getOutputStream());
 				socketIn = new ObjectInputStream(socket.getInputStream());
-				reader = new ClientReader(socketIn);
-				writer = new ClientWriter(socketOut);
 				return;
 			}
 		}
@@ -77,7 +77,9 @@ public class Client {
 		return socketIn.readInt() >= 0;
 	}
 
-	public void startThreads() {
+	public void readWrite(MessageProcessor processor) {
+		reader = new ClientReader(socketIn, processor);
+		writer = new ClientWriter(socketOut);
 		readerThread = new Thread(reader);
 		writerThread = new Thread(writer);
 		readerThread.start();

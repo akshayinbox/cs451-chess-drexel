@@ -60,7 +60,7 @@ public class MainTest {
 		}
 
 		Scanner scanner = new Scanner(System.in);
-		client.startThreads();
+		client.readWrite(new TestProcessor());
 		String s = scanner.nextLine();
 		while (!s.equals("end")) {
 			client.send(s);

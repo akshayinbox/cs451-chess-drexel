@@ -5,10 +5,12 @@ import java.io.ObjectInputStream;
 
 public class ClientReader implements Runnable {
 	private ObjectInputStream in;
+	private MessageProcessor processor;
 
 	//imagine passing in a UI object of some kind here and saving it as a member variable
-	public ClientReader(ObjectInputStream in) {
-		this.in = in;	
+	public ClientReader(ObjectInputStream in, MessageProcessor processor) {
+		this.in = in;
+		this.processor = processor;
 	}
 
 	@Override
@@ -16,14 +18,16 @@ public class ClientReader implements Runnable {
 		try {
 			Message received = (Message) in.readObject();
 			while (received != null) {
-				//then, while the thread is running, every time a message is recieved, instead of
-				//simply printing the content to the screen, imagine handing it off to the UI, i.e.,
-				//ui.process(message), or something to that effect. This allows the thread to simply
-				//gather messages as they are sent and let the UI process them. Though that happens
-				//all in this thread...hm...this might not work as well as I thought. Perhaps the
-				//processing of a message could all be done in a short thread too? That would
-				//prevent the reading thread from blocking for too long.
-				System.out.println(received.getContent());
+				//Here is how I imagine this working with the chess board:
+				//	The UI (or whatever) implements the MessageProcessor interface, and then
+				//	whenever a message is received, the thread passes the received message to the
+				//	UI. Then, the UI queries what type of Message it is: mvoe or chat
+				//	message. If it's a chat message, it prints it to the chat window, and if it's a
+				//	move, applies the move. Right now, this is all happening in this thread, the one that
+				//	receives messages. In the future, if we find that that causes too much blocking,
+				//	we might have to, say, process the message in a short-lived thread, but that is
+				//	down the line.
+				processor.process(received);
 				received = (Message) in.readObject();
 			}
 		}
