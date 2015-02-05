@@ -1,4 +1,6 @@
-package chessNetwork;
+package chessNetwork.client;
+
+import chessNetwork.messages.Message;
 
 import java.io.IOException;
 import java.io.ObjectOutputStream;

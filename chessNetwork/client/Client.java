@@ -1,4 +1,9 @@
-package chessNetwork;
+package chessNetwork.client;
+
+import chessNetwork.messages.ChatMessage;
+import chessNetwork.messages.Message;
+import chessNetwork.messages.MessageProcessor;
+import chessNetwork.messages.MoveMessage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -11,9 +16,7 @@ import chessBoard.Move;
 
 public class Client {
 	private static final int PORT = 9879;
-	private static final String URLs[] = new String[] { "localhost",
-   														"tux64-11.cs.drexel.edu",
-													};
+	private static final String URLs[] = new String[] { "localhost" };
 
 	private Socket socket;
 	private ObjectInputStream socketIn;

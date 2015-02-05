@@ -1,4 +1,4 @@
-package chessNetwork;
+package chessNetwork.server;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package chessNetwork;
+package chessNetwork.messages;
 
 import chessBoard.Move;
 

@@ -1,5 +1,8 @@
 package chessNetwork;
 
+import chessNetwork.client.Client;
+import chessNetwork.messages.TestProcessor;
+
 import java.io.IOException;
 
 import java.util.Scanner;

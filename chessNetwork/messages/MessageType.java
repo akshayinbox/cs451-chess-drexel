@@ -1,4 +1,4 @@
-package chessNetwork;
+package chessNetwork.messages;
 
 public enum MessageType {
 	MOVE(0), CHAT(1);
