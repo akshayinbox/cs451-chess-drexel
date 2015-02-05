@@ -32,12 +32,12 @@ public class Move implements Serializable {
 		return fromPosTranslated.toString() + " to " + toPosTranslated.toString();
 	}
 	
-	public Coord getTranslatedFrom() {
+	public Coord getFromTranslated() {
 		return this.fromPosTranslated;
 		//return new Coord(7 - this.fromPos.getRow(), 7 - this.fromPos.getCol());
 	}
 	
-	public Coord getTranslatedTo() {
+	public Coord getToTranslated() {
 		return this.toPosTranslated;
 		//return new Coord(7 - this.toPos.getRow(), 7 - this.toPos.getCol());
 	}
