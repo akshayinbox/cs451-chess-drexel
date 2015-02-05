@@ -36,6 +36,7 @@ import chessPieces.Pawn;
 import chessPieces.Queen;
 import chessPieces.Rook;
 
+import chessNetwork.client.Client;
 
 public class ChessboardUI extends JPanel{
 	private ChessBoard chessBoard;
@@ -72,8 +73,12 @@ public class ChessboardUI extends JPanel{
 	public void setChessBoard(ChessBoard cb) {
 		this.chessBoard = cb;
 	}
-	
-	public void addAllPieces(Boolean host) throws IOException {
+/*
+	public void setClient(Client client) {
+		this.client = client;
+	}
+*/	
+	public void addAllPieces(Boolean host, final Client client) throws IOException {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
 				JPanel temp = new JPanel();
@@ -84,6 +89,7 @@ public class ChessboardUI extends JPanel{
 						Move m = createMove(e);
 						if (m != null) {
 							System.out.println(m);
+							client.send(m);
 							Code result = chessBoard.validateAndApply(m);
 							if (result.equals(Code.SUCCESS)) {
 								uiApplyMove(e);

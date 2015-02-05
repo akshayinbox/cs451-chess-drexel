@@ -26,14 +26,18 @@ import javax.swing.border.TitledBorder;
 
 import chessBoard.ChessBoard;
 import chessBoard.Player;
+import chessNetwork.client.Client;
+import chessNetwork.messages.Message;
+import chessNetwork.messages.MessageProcessor;
+import chessNetwork.messages.MessageType;
 
-
-public class UI {
+public class UI implements MessageProcessor {
 	private final static String USER_HOST = "Host";
 	private final static String USER_JOIN = "Join";
 	private JFrame frame;
 	private ChessboardUI boardUI;
 	private ChessBoard chessBoard;
+	private Client client;
 	private boolean initialized = false;
 	
 	public UI() throws IOException {
@@ -72,6 +76,7 @@ public class UI {
 		menuBar.setMargin(new Insets(5, 5, 5, 5));
 		frame.setJMenuBar(menuBar);
 		
+		final UI that = this;
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addMouseListener(new MouseAdapter() {
 			@Override
@@ -84,7 +89,22 @@ public class UI {
 					boardUI.clearAllPieces();
 					if (connectionPanel.getGameType().equals(USER_HOST)) {
 						try {
-							boardUI.addAllPieces(true);
+							//TODO: should this be moved?
+							try {
+								client = new Client();
+								//boardUI.setClient(client);
+							}
+							catch (IOException e1) {
+								//TODO: couldn't connect to server
+								System.out.println("Couldn't connect.");
+							}
+							int gameID = client.createNewGame();
+							//TODO: if gameID is less than zero, there are too many waiting players
+							System.out.println("Your game ID is : " + gameID);
+
+							client.waitForPeer();
+							client.readWrite(that);
+							boardUI.addAllPieces(true, client);
 							boardUI.setChessBoard(new ChessBoard(true));
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
@@ -93,7 +113,27 @@ public class UI {
 					}
 					else {
 						try {
-							boardUI.addAllPieces(false);
+							try {
+								client = new Client();
+								//boardUI.setClient(client);
+							}
+							catch (IOException e1) {
+								System.out.println("Couldn't connect.");
+							}
+
+							int gameID;
+							try {
+								gameID = Integer.parseInt(connectionPanel.getID());
+							}
+							catch (NumberFormatException e1) {
+								//TODO: tell user he should only use a number as the ID
+								System.out.println("Use only an integer.");
+								return;
+							}
+
+							client.joinExistingGame(gameID);
+							client.readWrite(that);
+							boardUI.addAllPieces(false, client);
 							boardUI.setChessBoard(new ChessBoard(false));
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
@@ -302,5 +342,16 @@ public class UI {
 		JPanel boardPane = new JPanel(new GridLayout(8, 8, 0, 0));
 		boardUI = new ChessboardUI(boardPane);
 		boardBorder.add(boardPane);
+	}
+
+	@Override
+	public void process(Message message) {
+		if (message.getType() == MessageType.CHAT) {
+			System.out.print("Received a chat message: ");
+		}
+		else if (message.getType() == MessageType.MOVE) {
+			System.out.print("Received a move: ");
+		}
+		System.out.println(message.getContent());
 	}
 }
