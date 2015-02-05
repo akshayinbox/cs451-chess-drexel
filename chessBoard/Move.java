@@ -1,7 +1,8 @@
 package chessBoard;
 
+import java.io.Serializable;
 
-public class Move {
+public class Move implements Serializable {
 
 	private Coord fromPos, toPos;
 	

@@ -7,83 +7,87 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import java.util.Scanner;
+import chessBoard.Move;
 
 public class Client {
 	private static final int PORT = 9879;
+	private static final String URLs[] = new String[] { "localhost" };
 
-	private static class Read implements Runnable {
-		private ObjectInputStream socketIn;
-		public Read(ObjectInputStream socketIn) {
-			this.socketIn = socketIn;
-		}
+	private Socket socket;
+	private ObjectInputStream socketIn;
+	private ObjectOutputStream socketOut;
+	private ClientReader reader;
+	private ClientWriter writer;
+	private Thread readerThread;
+	private Thread writerThread;
 
-		@Override
-		public void run() {
-			try {
-				Message m = (Message) socketIn.readObject();
-				while (m != null) {
-					if (m.getType() == MessageType.CHAT)
-					{
-						System.out.println((String) m.getContent());
-					}
-					m = (Message) socketIn.readObject();
-				}
-			}
-			catch (Exception e) {
-				System.out.println("Read error.");
+	public Client() throws IOException {
+		for (int i = 0; i < URLs.length; i++) {
+			if (tryConnect(URLs[i])) {
+				socketOut = new ObjectOutputStream(socket.getOutputStream());
+				socketIn = new ObjectInputStream(socket.getInputStream());
+				reader = new ClientReader(socketIn);
+				writer = new ClientWriter(socketOut);
 				return;
 			}
 		}
+
+		throw new IOException();
 	}
 
-	public static void main(String args[]) {
-		if (args.length < 2) {
-			System.out.println("Please enter a host to connect to and a game id to join.");
-			return;
-		}
-
-		int game;
+	private boolean tryConnect(String host) {
 		try {
-			game = Integer.parseInt(args[1]);
-		}
-		catch (NumberFormatException e) {
-			System.out.println("Please use only an integer for the game id.");
-			return;
-		}
-		
-		try {
-			Socket socket = new Socket(args[0], PORT);
-			ObjectOutputStream socketOut = new ObjectOutputStream(socket.getOutputStream());
-			socketOut.writeInt(game);
-			socketOut.flush();
-			ObjectInputStream socketIn = new ObjectInputStream(socket.getInputStream()); 
-			if (game < 0)
-			{
-				int gameID = socketIn.readInt();
-				if (gameID < 0) {
-					System.out.println("Couldn't connect (too many games). Quitting.");
-					return;
-				}
-				else {
-					System.out.println("Your game ID is: " + gameID);
-				}
-			}
-		
-			new Thread(new Read(new ObjectInputStream(socket.getInputStream()))).start();
-
-			Scanner in = new Scanner(System.in);
-			String s = in.nextLine();
-			while (!s.equals("end")) {
-				socketOut.writeObject(new ChatMessage(s));
-				s = in.nextLine();
-			}
-			
-			socket.close();
+			socket = new Socket(host, PORT);	
 		}
 		catch (IOException e) {
-			System.out.println("Caught an IOException.");
-			return;
+			return false;
 		}
+
+		return true;
+	}
+
+	//what I imagine happening here is that the UI will have some sort of event handler code (e.g.,
+	//chat-button-pressed, or something), and it will then call this method, which will place the
+	//message in a queue on the writer object. Another thread solely dedicated to writing messages
+	//will then take things out of that queue.
+	public void send(String text) {
+		writer.send(new ChatMessage(text));
+	}
+
+	//see the above comments on how I imagined this could be used.
+	public void send(Move move) {
+		writer.send(new MoveMessage(move));
+	}
+
+	public int createNewGame() throws IOException {
+		socketOut.writeInt(-1);
+		socketOut.flush();
+		return socketIn.readInt();
+	}
+
+	public int waitForPeer() throws IOException {
+		System.out.println("Waiting for an integer (host)...");
+		return socketIn.readInt();
+	}
+
+	public boolean joinExistingGame(int gameID) throws IOException {
+		socketOut.writeInt(gameID);
+		socketOut.flush();
+		System.out.println("Waiting for an integer (guest)...");
+		return socketIn.readInt() >= 0;
+	}
+
+	public void startThreads() {
+		readerThread = new Thread(reader);
+		writerThread = new Thread(writer);
+		readerThread.start();
+		writerThread.start();
+	}
+
+	public void close() throws IOException, InterruptedException {
+		writer.exit();
+		socket.close();
+		readerThread.join();
+		writerThread.join();
 	}
 }
