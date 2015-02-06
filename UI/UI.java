@@ -43,7 +43,6 @@ public class UI implements MessageProcessor {
 	private Client client;
 	private JMenuBar menuBar = new JMenuBar();
 	private Boolean host;
-	private Boolean myMove;
 	
 	private JLabel thisCountdown = new JLabel("");
 	private JLabel opCountdown = new JLabel("");
@@ -153,6 +152,7 @@ public class UI implements MessageProcessor {
 					try {
 						boardUI.addAllPieces(host, client);
 						boardUI.setChessBoard(new ChessBoard(host));
+						boardUI.setCanMove(host);
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
@@ -160,8 +160,6 @@ public class UI implements MessageProcessor {
 					boardUI.getChessBoard().initializeBoard();
 					changeMenuButtons();
 					initialized = true;
-					if (host)
-						myMove = true;
 				}
 			}
 		});
@@ -391,7 +389,7 @@ public class UI implements MessageProcessor {
 	private class TimeListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (myMove) {
+			if (boardUI.getCanMove()) {
 				if (thisSec == 0) {
 					thisMin--;
 					thisSec = 59;	

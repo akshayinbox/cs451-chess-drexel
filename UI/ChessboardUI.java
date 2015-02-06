@@ -35,17 +35,17 @@ import chessPieces.Knight;
 import chessPieces.Pawn;
 import chessPieces.Queen;
 import chessPieces.Rook;
-
 import chessNetwork.client.Client;
 
 public class ChessboardUI extends JPanel{
 	private ChessBoard chessBoard;
 	private JPanel board;
+	private Boolean canMove;
 	private final static Color DARK_BROWN = new Color(79, 8 ,4);
 	private final static Color LIGHT_BROWN = new Color(244, 196, 120);
 	private final static int BOARD_ROWS = 8;
 	private final static int BOARD_COLS = 8;
-	
+
 	public ChessboardUI(JPanel panel) throws IOException {
 		board = panel;
 		board.setBorder(new LineBorder(Color.BLACK));
@@ -73,6 +73,14 @@ public class ChessboardUI extends JPanel{
 	public void setChessBoard(ChessBoard cb) {
 		this.chessBoard = cb;
 	}
+	
+	public void setCanMove(Boolean can) {
+		this.canMove = can;
+	}
+	
+	public Boolean getCanMove() {
+		return this.canMove;
+	}
 /*
 	public void setClient(Client client) {
 		this.client = client;
@@ -86,14 +94,17 @@ public class ChessboardUI extends JPanel{
 				b.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseReleased(MouseEvent e) {
-						Move m = createMove(e);
-						if (m != null) {
-							System.out.println(m);
-							client.send(m);
-							Code result = chessBoard.validateAndApply(m);
-							if (result.equals(Code.SUCCESS)) {
-								uiApplyMove(e);
-								System.out.println(chessBoard.toString());
+						if (canMove) {
+							Move m = createMove(e);
+							if (m != null) {
+								System.out.println(m);
+								client.send(m);
+								Code result = chessBoard.validateAndApply(m);
+								if (result.equals(Code.SUCCESS)) {
+									uiApplyMove(e);
+									canMove = false;
+									System.out.println(chessBoard.toString());
+								}
 							}
 						}
 					}
