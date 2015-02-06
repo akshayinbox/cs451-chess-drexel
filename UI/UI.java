@@ -6,6 +6,8 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
@@ -38,6 +41,21 @@ public class UI implements MessageProcessor {
 	private ChessboardUI boardUI;
 	private ChessBoard chessBoard;
 	private Client client;
+	private JMenuBar menuBar = new JMenuBar();
+	private Boolean host;
+	private Boolean myMove;
+	
+	private JLabel thisCountdown = new JLabel("");
+	private JLabel opCountdown = new JLabel("");
+	
+	private Timer thisTimer;
+	private Timer opTimer;
+	
+	private int thisMin;
+	private int opMin;
+	private int thisSec;
+	private int opSec;
+	
 	private boolean initialized = false;
 	
 	public UI() throws IOException {
@@ -72,40 +90,42 @@ public class UI implements MessageProcessor {
 	}
 	
 	private void createMenu() {
-		JMenuBar menuBar = new JMenuBar();
 		menuBar.setMargin(new Insets(5, 5, 5, 5));
 		frame.setJMenuBar(menuBar);
 		
 		final UI that = this;
 		JButton btnConnect = new JButton("Connect");
-		btnConnect.addMouseListener(new MouseAdapter() {
+		btnConnect.addActionListener(new ActionListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-//				ConnectPanel.showInputDialog(new Object[]{"Connect", "Cancel"});
+			public void actionPerformed(ActionEvent e) {
 				ConnectPanel connectionPanel = new ConnectPanel();
 				int result = JOptionPane.showConfirmDialog(null, connectionPanel,
 		        		"Connect", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 				if (result == JOptionPane.OK_OPTION) {
+					String hostOrJoin = connectionPanel.getGameType();
+					String timeLimit = connectionPanel.getTime();
+					timeLimit = "30 Minutes";
+					host = hostOrJoin.equals(USER_HOST);
 					boardUI.clearAllPieces();
-					if (connectionPanel.getGameType().equals(USER_HOST)) {
+					
+					try {
+						client = new Client();
+						//boardUI.setClient(client);
+					}
+					catch (IOException e1) {
+						//TODO: couldn't connect to server
+						System.out.println("Couldn't connect.");
+					}
+					
+					if (host) {
 						try {
-							//TODO: should this be moved?
-							try {
-								client = new Client();
-								//boardUI.setClient(client);
-							}
-							catch (IOException e1) {
-								//TODO: couldn't connect to server
-								System.out.println("Couldn't connect.");
-							}
 							int gameID = client.createNewGame();
 							//TODO: if gameID is less than zero, there are too many waiting players
 							System.out.println("Your game ID is : " + gameID);
 
 							client.waitForPeer();
 							client.readWrite(that);
-							boardUI.addAllPieces(true, client);
-							boardUI.setChessBoard(new ChessBoard(true));
+							
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
@@ -113,14 +133,6 @@ public class UI implements MessageProcessor {
 					}
 					else {
 						try {
-							try {
-								client = new Client();
-								//boardUI.setClient(client);
-							}
-							catch (IOException e1) {
-								System.out.println("Couldn't connect.");
-							}
-
 							int gameID;
 							try {
 								gameID = Integer.parseInt(connectionPanel.getID());
@@ -133,18 +145,23 @@ public class UI implements MessageProcessor {
 
 							client.joinExistingGame(gameID);
 							client.readWrite(that);
-							boardUI.addAllPieces(false, client);
-							boardUI.setChessBoard(new ChessBoard(false));
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
 					}
+					try {
+						boardUI.addAllPieces(host, client);
+						boardUI.setChessBoard(new ChessBoard(host));
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					boardUI.getChessBoard().initializeBoard();
+					changeMenuButtons();
 					initialized = true;
-					System.out.println(connectionPanel.getGameType());
-					System.out.println(connectionPanel.getTime());
-					System.out.println(connectionPanel.getID());
+					if (host)
+						myMove = true;
 				}
 			}
 		});
@@ -154,25 +171,30 @@ public class UI implements MessageProcessor {
 		menuBar.add(separator);
 		
 		JButton btnResign = new JButton("Resign");
-		btnResign.addMouseListener(new MouseAdapter() {
+		btnResign.addActionListener(new ActionListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(null, "The game has ended", "Resignation", JOptionPane.OK_OPTION, null);
+				boardUI.clearAllPieces();
+				System.exit(0);
 			}
 		});
+		btnResign.setEnabled(false);
 		menuBar.add(btnResign);
 		
 		JButton btnSave = new JButton("Save");
-		btnSave.addMouseListener(new MouseAdapter() {
+		btnSave.addActionListener(new ActionListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 			}
 		});
+		btnSave.setEnabled(false);
 		menuBar.add(btnSave);
 		
 		JButton btnLoad = new JButton("Load");
-		btnLoad.addMouseListener(new MouseAdapter() {
+		btnLoad.addActionListener(new ActionListener() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
+			public void actionPerformed(ActionEvent e) {
 			}
 		});
 		menuBar.add(btnLoad);
@@ -260,8 +282,7 @@ public class UI implements MessageProcessor {
 		JLabel whiteTimeLabel = new JLabel("White:");
 		whiteTimePane.add(whiteTimeLabel, BorderLayout.NORTH);
 		
-		JLabel whiteTimeRemaining = new JLabel("");
-		whiteTimePane.add(whiteTimeRemaining, BorderLayout.CENTER);
+		whiteTimePane.add(thisCountdown, BorderLayout.CENTER);
 		
 		JPanel blackTimePane = new JPanel();
 		timerBorder.add(blackTimePane);
@@ -270,8 +291,7 @@ public class UI implements MessageProcessor {
 		JLabel blackTimeLabel = new JLabel("Black:");
 		blackTimePane.add(blackTimeLabel, BorderLayout.NORTH);
 		
-		JLabel blackTimeRemaining = new JLabel("");
-		blackTimePane.add(blackTimeRemaining, BorderLayout.CENTER);
+		blackTimePane.add(opCountdown, BorderLayout.CENTER);
 	}
 	
 	private void createChatPane(JPanel sideMenuPane) {
@@ -347,6 +367,46 @@ public class UI implements MessageProcessor {
 		JPanel boardPane = new JPanel(new GridLayout(8, 8, 0, 0));
 		boardUI = new ChessboardUI(boardPane);
 		boardBorder.add(boardPane);
+	}
+	
+	private void changeMenuButtons() {
+		JButton connect = (JButton)menuBar.getComponent(0);
+		JButton resign = (JButton)menuBar.getComponent(2);
+		JButton save = (JButton)menuBar.getComponent(3);
+		JButton load = (JButton)menuBar.getComponent(4);
+		connect.setEnabled(false);
+		resign.setEnabled(true);
+		save.setEnabled(true);
+		load.setEnabled(false);
+	}
+	
+	private void setTimers(int timeLimit) {
+		thisMin = timeLimit;
+		opMin = timeLimit;
+		thisTimer = new Timer(1000, new TimeListener());
+		opTimer = new Timer(1000, new TimeListener());
+		thisTimer.start();
+	}
+	
+	private class TimeListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			if (myMove) {
+				if (thisSec == 0) {
+					thisMin--;
+					thisSec = 59;	
+				}
+				else {
+					thisSec--;
+				}
+				String secondText = Integer.toString(thisSec);
+				if (thisSec < 10) {
+					secondText = "0" + Integer.toString(thisSec);
+				}
+				String timeText = Integer.toString(thisMin) + ":" + secondText;
+				thisCountdown.setText(timeText);
+			}
+		}
 	}
 
 	@Override
