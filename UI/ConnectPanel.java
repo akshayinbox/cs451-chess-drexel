@@ -24,6 +24,8 @@ public class ConnectPanel extends JPanel {
 	private static JTextField txtUniqueID;
 	private ButtonGroup gameGroup = new ButtonGroup();
 	private ButtonGroup timeGroup = new ButtonGroup();
+	private JPanel idBorder = new JPanel();
+	JPanel timePanel = new JPanel();
 	
 	/**
 	 * Create the panel.
@@ -35,7 +37,8 @@ public class ConnectPanel extends JPanel {
 		hostBtn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				txtUniqueID.setEnabled(false);
+				idBorder.setVisible(false);
+				timePanel.setVisible(true);
 			}
 		});
 		this.add(hostBtn);
@@ -44,23 +47,22 @@ public class ConnectPanel extends JPanel {
 		joinBtn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				txtUniqueID.setEnabled(true);
+				idBorder.setVisible(true);
+				timePanel.setVisible(false);
 			}
 		});
 		this.add(joinBtn);
 		gameGroup.add(joinBtn);
 		
-		JPanel idBorder = new JPanel();
 		idBorder.setBorder(new TitledBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null), "Unique ID Required", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(idBorder);
 		
 		txtUniqueID = new JTextField();
 		idBorder.add(txtUniqueID);
 		txtUniqueID.setColumns(10);
-		txtUniqueID.setEnabled(false);
+		idBorder.setVisible(false);
 		
 		
-		JPanel timePanel = new JPanel();
 		timePanel.setBorder(new TitledBorder(null, "Time Limit", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		add(timePanel);
 		timePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
