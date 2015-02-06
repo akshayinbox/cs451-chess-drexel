@@ -291,7 +291,7 @@ public class UI implements MessageProcessor {
 		gbl_chatBorder.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		chatBorder.setLayout(gbl_chatBorder);
 		
-		JTextField chatText = new JTextField();
+		final JTextField chatText = new JTextField();
 		GridBagConstraints gbc_chatText = new GridBagConstraints();
 		gbc_chatText.insets = new Insets(0, 0, 0, 5);
 		gbc_chatText.fill = GridBagConstraints.HORIZONTAL;
@@ -314,6 +314,11 @@ public class UI implements MessageProcessor {
 		chatSendBtn.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
+				String messageText = chatText.getText();
+				if (!messageText.equals("") && client != null) {
+					chatText.setText("");
+					client.send(messageText);
+				}
 			}
 		});
 		GridBagConstraints gbc_chatSendBtn = new GridBagConstraints();
@@ -346,6 +351,7 @@ public class UI implements MessageProcessor {
 
 	@Override
 	public void process(Message message) {
+		//TODO: make these do what they're actually supposed to
 		if (message.getType() == MessageType.CHAT) {
 			System.out.print("Received a chat message: ");
 		}
