@@ -91,8 +91,11 @@ public class ChessBoard {
 	
 	//received move from network, we know it's valid so just make the move to the actual board
 	public void receiveMove(Move opponentMove) {
+		//TODO: should the opposingPreviousMove save the translated or untranslated version?
+		//      additionally, should the Move class have a translate() method which either swaps the
+		//      coordinates inplace or which returns the translated move?
 		opposingPreviousMove = opponentMove;
-		applyMove(opponentMove);
+		applyMove(new Move(opponentMove.getFromTranslated(), opponentMove.getToTranslated()));
 	}
 	
 	public Move getPreviousMove() {
