@@ -98,10 +98,10 @@ public class ChessboardUI extends JPanel{
 							Move m = createMove(e);
 							if (m != null) {
 								System.out.println(m);
-								client.send(m);
 								Code result = chessBoard.validateAndApply(m);
 								if (result.equals(Code.SUCCESS)) {
 									uiApplyMove(e);
+									client.send(m);
 									canMove = false;
 									System.out.println(chessBoard.toString());
 								}
@@ -149,23 +149,53 @@ public class ChessboardUI extends JPanel{
 	public void clearAllPieces() {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
-				int compIndex = i * BOARD_COLS + j;
+				int compIndex = getComponentIndex(i, j);
 				JPanel square = (JPanel)board.getComponent(compIndex);
 				square.removeAll();
 			}
 		}
 		board.updateUI();
 	}
+
+	public void receiveMove(Move m) {
+		//apply the move to the actual model of the chess board
+		chessBoard.receiveMove(m);
+		System.out.println("After receiving move: ");
+		System.out.println(chessBoard);
+
+		//then apply it to the UI
+		Coord from = m.getFromTranslated();
+		Coord to = m.getToTranslated();
+		int fromCompIndex = getComponentIndex(from.getRow(), from.getCol());
+		int toCompIndex = getComponentIndex(to.getRow(), to.getCol());
+		//get the piece component
+		Component oldComp = ((JPanel) board.getComponent(fromCompIndex)).getComponents()[0];
+		//get the new square onto which the peice will be palced
+		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+		//then finally move the piece
+		movePiece(oldComp, newComp);
+
+		canMove = true;
+	}
+
+
+	private int getComponentIndex(int row, int column) {
+		return row * BOARD_COLS + column;
+	}
+
+	private void movePiece(Component piece, JPanel newSquare) {
+		piece.getParent().remove(piece);
+		newSquare.removeAll();
+		newSquare.add(piece);
+		board.repaint();
+	}
 	
 	private void uiApplyMove(MouseEvent e) {
 		Component oldComp = e.getComponent();
 		JPanel newComp = (JPanel) getClosestComponent(e);
-		
-		oldComp.getParent().remove(oldComp);
-		newComp.removeAll();
-		newComp.add(oldComp);
-		board.repaint();
+		movePiece(oldComp, newComp);
 	}
+
 	private Move createMove(MouseEvent e) {
 		Component origin = e.getComponent();
 		Container square = origin.getParent();

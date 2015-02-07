@@ -28,6 +28,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
 import chessBoard.ChessBoard;
+import chessBoard.Move;
 import chessBoard.Player;
 import chessNetwork.client.Client;
 import chessNetwork.messages.Message;
@@ -414,7 +415,9 @@ public class UI implements MessageProcessor {
 			System.out.print("Received a chat message: ");
 		}
 		else if (message.getType() == MessageType.MOVE) {
-			System.out.print("Received a move: ");
+			Move m = (Move) message.getContent();
+			System.out.println("applying move to UI...");
+			boardUI.receiveMove(m);
 		}
 		System.out.println(message.getContent());
 	}
