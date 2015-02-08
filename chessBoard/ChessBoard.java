@@ -200,32 +200,37 @@ public class ChessBoard {
 	}
 	
 	/**
-	 * Checks if the game is over.
-	 * @return True if the game is over, false otherwise.
+	 * Checks if the game is over by Checkmate (your king) or Stalemate.
+	 * If neither of these apply, it returns 
+	 * a status code to continue.
+	 * @return The status of the game: Checkmate (your king), Stalemate, or Game continues.
 	 */
-	public boolean gameOver() {
+	public GameStatus gameOver() {
 		
-		if (!kingInCheck())
-			return false;
-		else {
-			//find if any of your possible moves will get the king out of check
-			for (int r = 0; r < 8; r++) {
-				for (int c = 0; c < 8; c++) {
-					if (board[r][c].isFriendly(Player.PLAYER1)) {
-						ArrayList<Move> moves = board[r][c].getPiece().getMoves(this, new Coord(r, c));
-						for (Move move : moves) {
-							ChessBoard newBoardState = new ChessBoard(this);
-							newBoardState.applyMove(move);
-							
-							if (!newBoardState.kingInCheck())
-								return false;
-						}
+		//find if any of your possible moves will keep the king out of check.
+		for (int r = 0; r < 8; r++) {
+			for (int c = 0; c < 8; c++) {
+				if (board[r][c].isFriendly(Player.PLAYER1)) {
+					ArrayList<Move> moves = board[r][c].getPiece().getMoves(this, new Coord(r, c));
+					for (Move move : moves) {
+						ChessBoard newBoardState = new ChessBoard(this);
+						newBoardState.applyMove(move);
+						
+						if (!newBoardState.kingInCheck())
+							return GameStatus.CONTINUE;
 					}
 				}
-			}
+			}			
 		}
 		
-		return true;
+		/**
+		 * No possible moves where King is not in check. If the king is already in check, then it's Checkmate
+		 * and you lose, Stalemate otherwise.
+		 */
+		if (kingInCheck())
+			return GameStatus.CHECKMATE;
+		else
+			return GameStatus.STALEMATE;
 	}
 	
 	/**
