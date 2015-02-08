@@ -3,11 +3,9 @@ package chessPieces;
 import java.util.ArrayList;
 
 import chessBoard.ChessBoard;
-import chessBoard.Code;
 import chessBoard.Coord;
 import chessBoard.Move;
 import chessBoard.Player;
-import chessBoard.Position;
 
 public class Queen extends ChessPiece {
 	

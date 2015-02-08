@@ -2,6 +2,11 @@ package chessBoard;
 
 import java.io.Serializable;
 
+/**
+ * A class representing a coordinate on the board by 
+ * the row and column of the position.
+ */
+
 public class Coord implements Serializable {
 
 	private int row, col;

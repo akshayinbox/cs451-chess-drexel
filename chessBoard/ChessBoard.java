@@ -10,6 +10,11 @@ import chessPieces.PieceID;
 import chessPieces.Queen;
 import chessPieces.Rook;
 
+/**
+ * This class is a model of an 8x8 game board used for chess. It aggregates chess pieces and is primarily
+ * used by the UI for validating moves and applying moves to the board.
+ *
+ */
 
 public class ChessBoard {
 
@@ -28,6 +33,10 @@ public class ChessBoard {
 		board = cloneBoard(ChessBoard.cloneBoard(cb.getBoard()));
 	}
 	
+	/**
+	 * Initializes the gameboard by constructing the appropriate ChessPieces and inserting them into
+	 * the board array.
+	 */
 	public void initializeBoard() {
 		
 		//initialize positions
@@ -79,6 +88,11 @@ public class ChessBoard {
 		}
 	}
 	
+	/**
+	 * Clones and returns a board, which is a 2-dimensional array of Positions containing pieces.
+	 * @param board The board to copy.
+	 * @return The cloned board.
+	 */
 	public static Position[][] cloneBoard(Position[][] board) {
 		Position[][] boardClone = new Position[8][8];
 		
@@ -89,17 +103,29 @@ public class ChessBoard {
 		return boardClone;
 	}
 	
-	//received move from network, we know it's valid so just make the move to the actual board
+	/**
+	 * Applies a move to the board.
+	 * @param opponentMove The opponent's last move.
+	 */
 	public void receiveMove(Move opponentMove) {
 		opposingPreviousMove = opponentMove;
 		applyMove(opponentMove);
 	}
 	
+	/**
+	 * Returns the last move of the opponent. Used for determining if En Passant
+	 * is allowed.
+	 * @return The opponent's last move
+	 */
 	public Move getPreviousMove() {
 		return opposingPreviousMove;
 	}
 	
-	//apply move to board, use return code to handle special cases
+	/**
+	 * Applies a move to the board and returns the move code.
+	 * @param move Move to be applied.
+	 * @return The code of the move, which could be a special case, e.g. Castle, En Passant
+	 */
 	public Code applyMove(Move move) {
 		Coord fromCoord = move.getFrom();
 		Coord toCoord = move.getTo();
@@ -134,6 +160,11 @@ public class ChessBoard {
 		return returnCode;
 	}
 	
+	/**
+	 * Receives a move from the UI and validates to make sure the move is legal
+	 * @param move Move of the player from the UI.
+	 * @return Code of whether the move was successful or not.
+	 */
 	public Code validateAndApply(Move move) {
 		
 		Coord from = move.getFrom();
@@ -168,6 +199,10 @@ public class ChessBoard {
 		return returnCode;
 	}
 	
+	/**
+	 * Checks if the game is over.
+	 * @return True if the game is over, false otherwise.
+	 */
 	public boolean gameOver() {
 		
 		if (!kingInCheck())
@@ -193,7 +228,10 @@ public class ChessBoard {
 		return true;
 	}
 	
-	
+	/**
+	 * Checks if the player's king is in check.
+	 * @return True if the king is in check, false otherwise.
+	 */
 	public boolean kingInCheck() {
 		Coord kingCoord = null;
 		
@@ -224,11 +262,20 @@ public class ChessBoard {
 		return false;	
 	}
 	
-	
+	/**
+	 * Determines whether a position on the board exists.
+	 * @param row Row number.
+	 * @param col Column number.
+	 * @return True if the position exists, false otherwise.
+	 */
 	public static boolean validPosition(int row, int col) {
 		return row >= 0 && row < 8 && col >=0 && col < 8; 
 	}
 	
+	/**
+	 * Returns the current gameboard, a 2-dimensional array of positions.
+	 * @return The 2-dimensional array of positions.
+	 */
 	public Position[][] getBoard() {
 		return board;
 	}

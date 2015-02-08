@@ -2,11 +2,21 @@ package chessBoard;
 
 import java.io.Serializable;
 
+/**
+ * A class representing a move from one position on the board to
+ * another position.
+ */
+
 public class Move implements Serializable {
 
 	private Coord fromPos, toPos;
-	private Coord fromPosTranslated, toPosTranslated;
+	private Coord fromPosTranslated, toPosTranslated; //move from opponent's perspective
 	
+	/**
+	 * Constructs a move object consiting of the original position and the new position for a piece.
+	 * @param from Original position of piece.
+	 * @param to New position of piece.
+	 */
 	public Move(Coord from, Coord to) {
 		this.fromPos = from;
 		this.toPos = to;
@@ -34,12 +44,10 @@ public class Move implements Serializable {
 	
 	public Coord getFromTranslated() {
 		return this.fromPosTranslated;
-		//return new Coord(7 - this.fromPos.getRow(), 7 - this.fromPos.getCol());
 	}
 	
 	public Coord getToTranslated() {
 		return this.toPosTranslated;
-		//return new Coord(7 - this.toPos.getRow(), 7 - this.toPos.getCol());
 	}
 	
 	@Override

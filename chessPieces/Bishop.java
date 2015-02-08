@@ -3,29 +3,20 @@ package chessPieces;
 import java.util.ArrayList;
 
 import chessBoard.ChessBoard;
-import chessBoard.Code;
 import chessBoard.Coord;
 import chessBoard.Move;
 import chessBoard.Player;
 import chessBoard.Position;
 
 public class Bishop extends ChessPiece {
-
-	private boolean hasMoved;
 	
 	public Bishop(Player player) {
 		super(player);
 		id = PieceID.BISHOP;
 	}
 	
-	public Bishop(Player player, boolean hasMoved) { 
-		super(player);
-		this.hasMoved = hasMoved;
-		id = PieceID.BISHOP;
-	}
-	
 	public Bishop clone() {
-		return new Bishop(player, hasMoved);
+		return new Bishop(player);
 	}
 		
 	public ArrayList<Move> getMoves(ChessBoard cb, Coord cord) {
