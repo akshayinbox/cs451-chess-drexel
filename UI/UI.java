@@ -115,6 +115,7 @@ public class UI implements MessageProcessor {
 					catch (IOException e1) {
 						//TODO: couldn't connect to server
 						System.out.println("Couldn't connect.");
+						return;
 					}
 					
 					if (host) {
@@ -150,6 +151,12 @@ public class UI implements MessageProcessor {
 							else
 							{
 								System.out.println("There is no game with that ID.");
+								try {
+									client.close();
+								}
+								catch (Exception e1) {
+									System.out.println("Couldn't close connection.");
+								}
 								return;
 							}
 						} catch (IOException e1) {

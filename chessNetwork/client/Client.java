@@ -83,7 +83,15 @@ public class Client {
 		socketOut.writeInt(gameID);
 		socketOut.flush();
 		System.out.println("Waiting for an integer (guest)...");
-		return socketIn.readInt() >= 0;
+		int received = socketIn.readInt();
+		if (received < 0)
+		{
+			socketOut.writeInt(0);
+			socketOut.flush();
+			return false;
+		}
+
+		return true;
 	}
 
 	public void readWrite(MessageProcessor processor) {

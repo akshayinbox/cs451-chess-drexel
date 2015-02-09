@@ -55,23 +55,26 @@ public class ClientHandler implements Runnable {
 				if (!establishNewGame()) {
 					socketOut.write(-1);
 					socketOut.flush();
+					socketIn.readInt();
 					clientSocket.close();
 					System.out.println("Not enough room. Client handler exiting.");
-				}	
+				}
 			}
 			else {
 				if (joinExistingGame(gameID)) {
 					//indicate that the connection was successful to the client
 					socketOut.writeInt(0);
 					socketOut.flush();
-
 					//allow the peer thread to continue
 					peer.peerSemaphore.release();
 				}
 				else {
-					socketOut.write(-1);
+					System.out.println("Game doesn't exist.");
+					socketOut.writeInt(-1);
 					socketOut.flush();
+					socketIn.readInt();
 					clientSocket.close();
+					System.out.println("Exiting.");
 					return;
 				}
 			}
