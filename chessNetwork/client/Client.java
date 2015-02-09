@@ -21,7 +21,7 @@ public class Client {
 	                                                    "tux64-11.cs.drexel.edu",
 	                                                    "tux64-12.cs.drexel.edu",
 	                                                    "tux64-13.cs.drexel.edu",
-	                                                    "tux64-14.cs.drexel.du"
+	                                                    "tux64-14.cs.drexel.edu"
 													  };
 
 	private Socket socket;
