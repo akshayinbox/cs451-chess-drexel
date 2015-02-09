@@ -143,8 +143,15 @@ public class UI implements MessageProcessor {
 								return;
 							}
 
-							client.joinExistingGame(gameID);
-							client.readWrite(that);
+							if (client.joinExistingGame(gameID))
+							{
+								client.readWrite(that);
+							}
+							else
+							{
+								System.out.println("There is no game with that ID.");
+								return;
+							}
 						} catch (IOException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
