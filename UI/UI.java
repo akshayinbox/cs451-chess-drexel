@@ -21,11 +21,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.DefaultCaret;
 
 import chessBoard.ChessBoard;
 import chessBoard.Move;
@@ -44,6 +46,8 @@ public class UI implements MessageProcessor {
 	private Client client;
 	private JMenuBar menuBar = new JMenuBar();
 	private Boolean host;
+	private JTextArea moveTextArea = new JTextArea();
+	private JTextArea chatTextArea = new JTextArea();
 	
 	private JLabel thisCountdown = new JLabel("");
 	private JLabel opCountdown = new JLabel("");
@@ -121,7 +125,10 @@ public class UI implements MessageProcessor {
 						try {
 							int gameID = client.createNewGame();
 							//TODO: if gameID is less than zero, there are too many waiting players
-							System.out.println("Your game ID is : " + gameID);
+							JOptionPane.showMessageDialog(frame,
+								    "Your game ID is " + gameID,
+								    "",
+								    JOptionPane.PLAIN_MESSAGE);
 
 							client.waitForPeer();
 							client.readWrite(that);
@@ -259,7 +266,10 @@ public class UI implements MessageProcessor {
 		gbl_moveBorder.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 		moveBorder.setLayout(gbl_moveBorder);
 		
-		JScrollPane moveScrollPane = new JScrollPane();
+		DefaultCaret caret = (DefaultCaret)moveTextArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
+		JScrollPane moveScrollPane = new JScrollPane(moveTextArea);
 		GridBagConstraints gbc_moveScrollPane = new GridBagConstraints();
 		gbc_moveScrollPane.gridheight = 3;
 		gbc_moveScrollPane.gridwidth = 3;
@@ -326,7 +336,10 @@ public class UI implements MessageProcessor {
 		chatBorder.add(chatText, gbc_chatText);
 		chatText.setColumns(10);
 		
-		JScrollPane chatPane = new JScrollPane();
+		DefaultCaret caret = (DefaultCaret)chatTextArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
+		JScrollPane chatPane = new JScrollPane(chatTextArea);
 		GridBagConstraints gbc_chatPane = new GridBagConstraints();
 		gbc_chatPane.gridwidth = 2;
 		gbc_chatPane.insets = new Insets(0, 0, 5, 5);
@@ -343,6 +356,9 @@ public class UI implements MessageProcessor {
 				String messageText = chatText.getText();
 				if (!messageText.equals("") && client != null) {
 					chatText.setText("");
+					String currentLog = chatTextArea.getText();
+					currentLog = (currentLog.equals("")) ? currentLog + "You: " + messageText : currentLog + '\n' + "You: " + messageText; 
+					chatTextArea.setText(currentLog);
 					client.send(messageText);
 				}
 			}
@@ -419,12 +435,19 @@ public class UI implements MessageProcessor {
 	public void process(Message message) {
 		//TODO: make these do what they're actually supposed to
 		if (message.getType() == MessageType.CHAT) {
-			System.out.print("Received a chat message: ");
+			String messageText = (String) message.getContent();
+			String currentLog = chatTextArea.getText();
+			currentLog = (currentLog.equals("")) ? currentLog + "Opponent: " + messageText : currentLog + '\n' + "Opponent: " + messageText;
+			chatTextArea.setText(currentLog);
 		}
 		else if (message.getType() == MessageType.MOVE) {
 			Move m = (Move) message.getContent();
 			System.out.println("applying move to UI...");
 			boardUI.receiveMove(m);
+			JOptionPane.showMessageDialog(frame,
+				    "Your Move.",
+				    "",
+				    JOptionPane.PLAIN_MESSAGE);
 		}
 		System.out.println(message.getContent());
 	}

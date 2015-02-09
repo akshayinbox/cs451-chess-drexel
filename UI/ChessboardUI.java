@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -104,7 +105,16 @@ public class ChessboardUI extends JPanel{
 									client.send(m);
 									canMove = false;
 									System.out.println(chessBoard.toString());
-								}
+								} else if (result.equals(Code.IN_CHECK))
+									JOptionPane.showMessageDialog(null,
+										    "You cannot move yourself into check.",
+										    "",
+										    JOptionPane.WARNING_MESSAGE);
+								else
+									JOptionPane.showMessageDialog(null,
+										    "Invalid Move",
+										    "",
+										    JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}

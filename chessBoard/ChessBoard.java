@@ -164,7 +164,7 @@ public class ChessBoard {
 				
 		//check if king is moved into check, otherwise update the board to the new board
 		if (cloneBoard.kingInCheck())
-			return Code.NOT_LEGAL;
+			return Code.IN_CHECK;
 		else 
 			board = cloneBoard.getBoard();
 		
