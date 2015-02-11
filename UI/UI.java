@@ -53,12 +53,13 @@ public class UI implements MessageProcessor {
 	private JLabel opCountdown = new JLabel("");
 	
 	private Timer thisTimer;
-	private Timer opTimer;
 	
 	private int thisMin;
 	private int opMin;
 	private int thisSec;
 	private int opSec;
+	
+	private int thisSecLeft;
 	
 	private boolean initialized = false;
 	
@@ -93,6 +94,22 @@ public class UI implements MessageProcessor {
 		return initialized;
 	}
 	
+	public Timer getThisTimer() {
+		return thisTimer;
+	}
+	
+	public int getThisMin() {
+		return thisMin;
+	}
+	
+	public int getThisSec() {
+		return thisSec;
+	}
+	
+	public int getThisSecLeft() {
+		return thisSecLeft;
+	}
+	
 	private void createMenu() {
 		menuBar.setMargin(new Insets(5, 5, 5, 5));
 		frame.setJMenuBar(menuBar);
@@ -108,7 +125,6 @@ public class UI implements MessageProcessor {
 				if (result == JOptionPane.OK_OPTION) {
 					String hostOrJoin = connectionPanel.getGameType();
 					String timeLimit = connectionPanel.getTime();
-					timeLimit = "30 Minutes";
 					host = hostOrJoin.equals(USER_HOST);
 					boardUI.clearAllPieces();
 					
@@ -182,6 +198,10 @@ public class UI implements MessageProcessor {
 					boardUI.getChessBoard().initializeBoard();
 					changeMenuButtons();
 					initialized = true;
+					if (!timeLimit.equals(""))
+						thisTimer = new Timer(1000, new TimeListener());
+						setTimers(true, Integer.parseInt(timeLimit.split(" ")[0]), 0);
+						setTimers(false, Integer.parseInt(timeLimit.split(" ")[0]), 0);
 				}
 			}
 		});
@@ -394,7 +414,7 @@ public class UI implements MessageProcessor {
 		boardBorder.setBackground(new Color(219, 99, 12));
 		
 		JPanel boardPane = new JPanel(new GridLayout(8, 8, 0, 0));
-		boardUI = new ChessboardUI(boardPane);
+		boardUI = new ChessboardUI(boardPane, this);
 		boardBorder.add(boardPane);
 	}
 	
@@ -409,11 +429,21 @@ public class UI implements MessageProcessor {
 		load.setEnabled(false);
 	}
 	
-	private void setTimers(int timeLimit) {
-		thisMin = timeLimit;
-		opMin = timeLimit;
-		thisTimer = new Timer(1000, new TimeListener());
-		opTimer = new Timer(1000, new TimeListener());
+	private void setTimers(Boolean isMe, int min, int sec) {
+		if (isMe) {
+			thisMin = min;
+			thisSec = sec;
+			thisSecLeft = (60 * min) + sec;
+		} else {
+			opMin = min;
+			opSec = sec;
+			String secondText = Integer.toString(opSec);
+			if (opSec < 10) {
+				secondText = "0" + Integer.toString(opSec);
+			}
+			String timeText = Integer.toString(opMin) + ":" + secondText;
+			opCountdown.setText(timeText);
+		}
 		thisTimer.start();
 	}
 	
@@ -451,10 +481,16 @@ public class UI implements MessageProcessor {
 			Move m = (Move) message.getContent();
 			System.out.println("applying move to UI...");
 			boardUI.receiveMove(m);
+			int totalSecTaken = m.getTimeTaken();
+			int totalOpTime = (60 * opMin) + opSec;
+			int minLeft = (totalOpTime - totalSecTaken) / 60;
+			int secLeft = (totalOpTime - totalSecTaken) % 60;
+			
 			JOptionPane.showMessageDialog(frame,
 				    "Your Move.",
 				    "",
 				    JOptionPane.PLAIN_MESSAGE);
+			setTimers(false, minLeft, secLeft);
 		}
 		System.out.println(message.getContent());
 	}

@@ -21,7 +21,7 @@ public class Client {
 	                                                    "tux64-11.cs.drexel.edu",
 	                                                    "tux64-12.cs.drexel.edu",
 	                                                    "tux64-13.cs.drexel.edu",
-	                                                    "tux64-14.cs.drexel.edu"
+	                                                    "tux64-14.cs.drexel.du"
 													  };
 
 	private Socket socket;
@@ -83,15 +83,7 @@ public class Client {
 		socketOut.writeInt(gameID);
 		socketOut.flush();
 		System.out.println("Waiting for an integer (guest)...");
-		int received = socketIn.readInt();
-		if (received < 0)
-		{
-			socketOut.writeInt(0);
-			socketOut.flush();
-			return false;
-		}
-
-		return true;
+		return socketIn.readInt() >= 0;
 	}
 
 	public void readWrite(MessageProcessor processor) {

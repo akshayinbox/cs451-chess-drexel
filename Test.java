@@ -76,6 +76,6 @@ public class Test {
 		Coord fromCoord = new Coord(fromRow, fromCol);
 		Coord toCoord = new Coord(toRow, toCol);
 		
-		return new Move(fromCoord, toCoord);
+		return new Move(fromCoord, toCoord, null);
 	}
 }

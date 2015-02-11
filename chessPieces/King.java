@@ -40,28 +40,28 @@ public class King extends ChessPiece {
 		//TODO: Can I use a set class to get every permutation of [1 -1] and use a loop instead?
 		//one square in any direction
 		if (ChessBoard.validPosition(row-1, col) && board[row-1][col].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row-1, col)));
+			moves.add(new Move(cord, new Coord(row-1, col), null));
 		
 		if (ChessBoard.validPosition(row-1, col-1) && board[row-1][col-1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row-1, col-1)));
+			moves.add(new Move(cord, new Coord(row-1, col-1), null));
 		
 		if (ChessBoard.validPosition(row-1, col+1) && board[row-1][col+1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row-1, col+1)));
+			moves.add(new Move(cord, new Coord(row-1, col+1), null));
 		
 		if (ChessBoard.validPosition(row, col-1) && board[row][col-1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row, col-1)));
+			moves.add(new Move(cord, new Coord(row, col-1), null));
 		
 		if (ChessBoard.validPosition(row, col+1) && board[row][col+1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row, col+1)));
+			moves.add(new Move(cord, new Coord(row, col+1), null));
 		
 		if (ChessBoard.validPosition(row+1, col) && board[row+1][col].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row+1, col)));	
+			moves.add(new Move(cord, new Coord(row+1, col), null));	
 		
 		if (ChessBoard.validPosition(row+1, col-1) && board[row+1][col-1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row+1, col-1)));
+			moves.add(new Move(cord, new Coord(row+1, col-1), null));
 		
 		if (ChessBoard.validPosition(row+1, col+1) && board[row+1][col+1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row+1, col+1)));
+			moves.add(new Move(cord, new Coord(row+1, col+1), null));
 		
 		/* You can only castle if:
 		 * 1. The king has not moved.
@@ -89,11 +89,11 @@ public class King extends ChessPiece {
 				ChessBoard boardClone = new ChessBoard(cb);
 				Coord kingFrom = new Coord(7, 4);
 				Coord kingThrough = new Coord(7, 3);
-				boardClone.applyMove(new Move(kingFrom, kingThrough));
+				boardClone.applyMove(new Move(kingFrom, kingThrough, null));
 				boolean inCheckThrough = boardClone.kingInCheck();
 				
 				if(empty1 && empty2 && empty3 && !rookMoved && !inCheckThrough)
-					moves.add(new Move(cord, new Coord(row, col-2)));
+					moves.add(new Move(cord, new Coord(row, col-2), null));
 			}
 			
 			//check right rook
@@ -109,11 +109,11 @@ public class King extends ChessPiece {
 				ChessBoard boardClone = new ChessBoard(cb);
 				Coord kingFrom = new Coord(0, 4);
 				Coord kingThrough = new Coord(0, 5);
-				boardClone.applyMove(new Move(kingFrom, kingThrough));
+				boardClone.applyMove(new Move(kingFrom, kingThrough, null));
 				boolean inCheckThrough = boardClone.kingInCheck();
 				
 				if(empty1 && empty2 && !rookMoved && !inCheckThrough)
-					moves.add(new Move(cord, new Coord(row, col+2)));
+					moves.add(new Move(cord, new Coord(row, col+2), null));
 			}
 		}
 

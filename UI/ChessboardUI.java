@@ -22,6 +22,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -41,13 +42,15 @@ import chessNetwork.client.Client;
 public class ChessboardUI extends JPanel{
 	private ChessBoard chessBoard;
 	private JPanel board;
+	private UI windowUI;
 	private Boolean canMove;
 	private final static Color DARK_BROWN = new Color(79, 8 ,4);
 	private final static Color LIGHT_BROWN = new Color(244, 196, 120);
 	private final static int BOARD_ROWS = 8;
 	private final static int BOARD_COLS = 8;
 
-	public ChessboardUI(JPanel panel) throws IOException {
+	public ChessboardUI(JPanel panel, UI window) throws IOException {
+		windowUI = window;
 		board = panel;
 		board.setBorder(new LineBorder(Color.BLACK));
 		board.setPreferredSize(new Dimension(500, 500));
@@ -101,6 +104,7 @@ public class ChessboardUI extends JPanel{
 								System.out.println(m);
 								Code result = chessBoard.validateAndApply(m);
 								if (result.equals(Code.SUCCESS)) {
+									windowUI.getThisTimer().stop();
 									uiApplyMove(e);
 									client.send(m);
 									canMove = false;
@@ -220,8 +224,11 @@ public class ChessboardUI extends JPanel{
 		String[] newLocation = newComp.getName().split(",");
 		int newCol = Integer.parseInt(newLocation[0]);
 		int newRow = Integer.parseInt(newLocation[1]);
-		
-		Move m = new Move(new Coord(originRow, originCol), new Coord(newRow, newCol));
+		int secLeft = windowUI.getThisSecLeft();
+		int currentMin = windowUI.getThisMin();
+		int currentSec = windowUI.getThisSec();
+		int totalTime = secLeft - (60*currentMin + currentSec);
+		Move m = new Move(new Coord(originRow, originCol), new Coord(newRow, newCol), totalTime);
 		return m;
 	}
 	

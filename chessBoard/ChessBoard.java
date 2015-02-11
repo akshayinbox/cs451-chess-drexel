@@ -95,7 +95,7 @@ public class ChessBoard {
 		//      additionally, should the Move class have a translate() method which either swaps the
 		//      coordinates inplace or which returns the translated move?
 		opposingPreviousMove = opponentMove;
-		applyMove(new Move(opponentMove.getFromTranslated(), opponentMove.getToTranslated()));
+		applyMove(new Move(opponentMove.getFromTranslated(), opponentMove.getToTranslated(), opponentMove.getTimeTaken()));
 	}
 	
 	public Move getPreviousMove() {
