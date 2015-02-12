@@ -107,6 +107,7 @@ public class ChessboardUI extends JPanel{
 									windowUI.getThisTimer().stop();
 									uiApplyMove(e);
 									client.send(m);
+									windowUI.setThisSecLeft(windowUI.getThisSecLeft() - m.getTimeTaken());
 									canMove = false;
 									System.out.println(chessBoard.toString());
 								} else if (result.equals(Code.IN_CHECK))

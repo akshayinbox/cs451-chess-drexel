@@ -110,6 +110,10 @@ public class UI implements MessageProcessor {
 		return thisSecLeft;
 	}
 	
+	public void setThisSecLeft(int time) {
+		this.thisSecLeft = time;
+	}
+	
 	private void createMenu() {
 		menuBar.setMargin(new Insets(5, 5, 5, 5));
 		frame.setJMenuBar(menuBar);
@@ -322,7 +326,7 @@ public class UI implements MessageProcessor {
 		timerBorder.add(whiteTimePane);
 		whiteTimePane.setLayout(new BorderLayout(0, 0));
 		
-		JLabel whiteTimeLabel = new JLabel("White:");
+		JLabel whiteTimeLabel = new JLabel("You:");
 		whiteTimePane.add(whiteTimeLabel, BorderLayout.NORTH);
 		
 		whiteTimePane.add(thisCountdown, BorderLayout.CENTER);
@@ -331,7 +335,7 @@ public class UI implements MessageProcessor {
 		timerBorder.add(blackTimePane);
 		blackTimePane.setLayout(new BorderLayout(0, 0));
 		
-		JLabel blackTimeLabel = new JLabel("Black:");
+		JLabel blackTimeLabel = new JLabel("Opponent:");
 		blackTimePane.add(blackTimeLabel, BorderLayout.NORTH);
 		
 		blackTimePane.add(opCountdown, BorderLayout.CENTER);
@@ -434,6 +438,12 @@ public class UI implements MessageProcessor {
 			thisMin = min;
 			thisSec = sec;
 			thisSecLeft = (60 * min) + sec;
+			String secondText = Integer.toString(thisSec);
+			if (thisSec < 10) {
+				secondText = "0" + Integer.toString(thisSec);
+			}
+			String timeText = Integer.toString(thisMin) + ":" + secondText;
+			thisCountdown.setText(timeText);
 		} else {
 			opMin = min;
 			opSec = sec;
@@ -490,7 +500,8 @@ public class UI implements MessageProcessor {
 				    "Your Move.",
 				    "",
 				    JOptionPane.PLAIN_MESSAGE);
-			setTimers(false, minLeft, secLeft);
+			if (totalOpTime - totalSecTaken > 0)
+				setTimers(false, minLeft, secLeft);
 		}
 		System.out.println(message.getContent());
 	}
