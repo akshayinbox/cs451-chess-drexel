@@ -13,6 +13,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -29,7 +30,9 @@ import chessBoard.Code;
 import chessBoard.Coord;
 import chessBoard.Move;
 import chessBoard.Player;
+import chessBoard.Position;
 import chessPieces.Bishop;
+import chessPieces.ChessPiece;
 import chessPieces.King;
 import chessPieces.Knight;
 import chessPieces.Pawn;
@@ -73,6 +76,61 @@ public class ChessboardUI extends JPanel{
 		this.chessBoard = cb;
 	}
 	
+	/**
+	 * After a move has been applied, fixes the UI of the board to match the
+	 * new ChessBoard.
+	 */
+	public void updateBoard() {
+		ArrayList<JPanel> before = new ArrayList<JPanel>();
+		ArrayList<JPanel> after = new ArrayList<JPanel>();
+		ArrayList<String> beforeId = new ArrayList<String>();
+		ArrayList<String> afterId = new ArrayList<String>();
+		
+		for (int i = 0; i < BOARD_ROWS; i++) {
+			for (int j = 0; j < BOARD_COLS; j++) {
+				int compIndex = i * BOARD_COLS + j;
+				JPanel square = (JPanel)board.getComponent(compIndex);
+				
+				int cCount = square.getComponentCount();
+				Position pos = chessBoard.getPosition(new Coord(i, j));
+				
+				if (cCount != 0) {
+					PieceUI pUI = (PieceUI) square.getComponent(0);
+					
+					//piece moved from square
+					if(pos.isEmpty())  {
+						before.add(square);
+						beforeId.add(pUI.getPiece().toString());
+					}
+					//piece moved to square and displaced previous piece
+					else if(!pos.getPiece().toString().equals(pUI.getPiece().toString())) {
+						after.add(square);
+						afterId.add(pos.getPiece().toString());
+					}
+				}
+				
+				//piece moved to empty square
+				if (cCount == 0 && !pos.isEmpty()) {
+					after.add(square);
+					afterId.add(pos.getPiece().toString());
+				}
+			}
+		}
+		
+		//swap the old pieces positions on board to the new positions
+		for(int i = 0; i < after.size(); i++) {
+			for (int j = 0; j < before.size(); j++) {
+				if (afterId.get(i).equals(beforeId.get(j))) {
+					JPanel oldComp = before.get(j);
+					JPanel newComp = after.get(i);
+					newComp.removeAll();
+					newComp.add(oldComp.getComponent(0));
+					board.repaint();
+				}	
+			}
+		}
+	}
+	
 	public void addAllPieces(Boolean host) throws IOException {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
@@ -85,8 +143,9 @@ public class ChessboardUI extends JPanel{
 						if (m != null) {
 							System.out.println(m);
 							Code result = chessBoard.validateAndApply(m);
-							if (result.equals(Code.SUCCESS)) {
-								uiApplyMove(e);
+							if (result.ordinal() > 0) {
+								updateBoard();
+								//uiApplyMove(e);
 								System.out.println(chessBoard.toString());
 							}
 						}
@@ -177,7 +236,7 @@ public class ChessboardUI extends JPanel{
 		int y = e.getY();
 		return board.getComponentAt(x + comX, y + comY);
 	}
-	
+		
 	private PieceUI addPawn(PieceUI button, int row) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;

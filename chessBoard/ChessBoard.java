@@ -3,6 +3,7 @@ package chessBoard;
 import java.util.ArrayList;
 
 import chessPieces.Bishop;
+import chessPieces.ChessPiece;
 import chessPieces.King;
 import chessPieces.Knight;
 import chessPieces.Pawn;
@@ -283,6 +284,10 @@ public class ChessBoard {
 	 */
 	public Position[][] getBoard() {
 		return board;
+	}
+	
+	public Position getPosition(Coord cord) {
+		return board[cord.getRow()][cord.getCol()];
 	}
 	
 	public String toString() {
