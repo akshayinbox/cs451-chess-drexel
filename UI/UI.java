@@ -114,6 +114,12 @@ public class UI implements MessageProcessor {
 		this.thisSecLeft = time;
 	}
 	
+	public void addToMoveList(String move) {
+		String currentLog = moveTextArea.getText();
+		currentLog = (currentLog.equals("")) ? currentLog + move : currentLog + '\n' + move; 
+		moveTextArea.setText(currentLog);
+	}
+	
 	private void createMenu() {
 		menuBar.setMargin(new Insets(5, 5, 5, 5));
 		frame.setJMenuBar(menuBar);
@@ -138,7 +144,10 @@ public class UI implements MessageProcessor {
 					}
 					catch (IOException e1) {
 						//TODO: couldn't connect to server
-						System.out.println("Couldn't connect.");
+						JOptionPane.showMessageDialog(frame,
+							    "Couldn't connect.",
+							    "",
+							    JOptionPane.WARNING_MESSAGE);
 						return;
 					}
 					
@@ -167,7 +176,10 @@ public class UI implements MessageProcessor {
 							}
 							catch (NumberFormatException e1) {
 								//TODO: tell user he should only use a number as the ID
-								System.out.println("Use only an integer.");
+								JOptionPane.showMessageDialog(frame,
+									    "Use only an integer.",
+									    "",
+									    JOptionPane.WARNING_MESSAGE);
 								return;
 							}
 
@@ -177,7 +189,10 @@ public class UI implements MessageProcessor {
 							}
 							else
 							{
-								System.out.println("There is no game with that ID.");
+								JOptionPane.showMessageDialog(frame,
+									    "There are no games with that ID.",
+									    "",
+									    JOptionPane.WARNING_MESSAGE);
 								try {
 									client.close();
 								}

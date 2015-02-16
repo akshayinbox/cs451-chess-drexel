@@ -48,6 +48,7 @@ public class ChessboardUI extends JPanel{
 	private final static Color LIGHT_BROWN = new Color(244, 196, 120);
 	private final static int BOARD_ROWS = 8;
 	private final static int BOARD_COLS = 8;
+	private final static String[][] boardRep = new String[BOARD_ROWS][BOARD_COLS];
 
 	public ChessboardUI(JPanel panel, UI window) throws IOException {
 		windowUI = window;
@@ -62,6 +63,7 @@ public class ChessboardUI extends JPanel{
 				square.setBorder(new EmptyBorder(5, 5, 5, 5));
 //				square.setPreferredSize(new Dimension(50, 50));
 				board.add(square);
+				boardRep[i][j] = setSquareRep(i, j);
 			}
 		}
 	}
@@ -107,6 +109,9 @@ public class ChessboardUI extends JPanel{
 									windowUI.getThisTimer().stop();
 									uiApplyMove(e);
 									client.send(m);
+									PieceUI piece = (PieceUI)e.getSource();
+									String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
+									windowUI.addToMoveList("You: " + pieceName + " " + boardRep[m.getFrom().getRow()][m.getFrom().getCol()] + " to " + boardRep[m.getTo().getRow()][m.getTo().getCol()]);
 									windowUI.setThisSecLeft(windowUI.getThisSecLeft() - m.getTimeTaken());
 									canMove = false;
 									System.out.println(chessBoard.toString());
@@ -190,10 +195,19 @@ public class ChessboardUI extends JPanel{
 		//then finally move the piece
 		movePiece(oldComp, newComp);
 
+		PieceUI piece = (PieceUI)oldComp;
+		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
+		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
+		
 		canMove = true;
 	}
 
-
+	private String setSquareRep(int row, int col) {
+		row += 1;
+		char letter = (char) (col + 65);
+		return Character.toString(letter) + Integer.toString(row);
+	}
+	
 	private int getComponentIndex(int row, int column) {
 		return row * BOARD_COLS + column;
 	}
