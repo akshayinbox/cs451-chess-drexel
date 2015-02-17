@@ -204,7 +204,7 @@ public class ChessboardUI extends JPanel{
 
 		PieceUI piece = (PieceUI)oldComp;
 		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
-		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
+		windowUI.addToMoveList("Opp: " + pieceName + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
 		
 		canMove = true;
 	}
