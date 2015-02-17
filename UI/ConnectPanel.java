@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.HeadlessException;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Serializable;
 import java.util.Enumeration;
 
 import javax.swing.AbstractButton;
@@ -20,7 +21,8 @@ import javax.swing.border.TitledBorder;
 import javax.swing.border.EtchedBorder;
 
 
-public class ConnectPanel extends JPanel {
+public class ConnectPanel extends JPanel implements Serializable {
+	private static final long serialVersionUID = -8278205982183652581L;
 	private static JTextField txtUniqueID;
 	private ButtonGroup gameGroup = new ButtonGroup();
 	private ButtonGroup timeGroup = new ButtonGroup();

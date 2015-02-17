@@ -13,6 +13,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -39,10 +40,11 @@ import chessPieces.Queen;
 import chessPieces.Rook;
 import chessNetwork.client.Client;
 
-public class ChessboardUI extends JPanel{
+public class ChessboardUI extends JPanel implements Serializable {
+	private static final long serialVersionUID = -5553944313833181921L;
 	private ChessBoard chessBoard;
 	private JPanel board;
-	private UI windowUI;
+	private transient UI windowUI;
 	private Boolean canMove;
 	private int thisSecLeft;
 	private int opSecLeft;

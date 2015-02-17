@@ -10,7 +10,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -37,13 +41,14 @@ import chessNetwork.messages.Message;
 import chessNetwork.messages.MessageProcessor;
 import chessNetwork.messages.MessageType;
 
-public class UI implements MessageProcessor {
+public class UI implements MessageProcessor, Serializable {
+	private static final long serialVersionUID = -6155870626478086508L;
 	private final static String USER_HOST = "Host";
 	private final static String USER_JOIN = "Join";
 	private JFrame frame;
 	private ChessboardUI boardUI;
 	private ChessBoard chessBoard;
-	private Client client;
+	private transient Client client;
 	private JMenuBar menuBar = new JMenuBar();
 	private Boolean host;
 	private JTextArea moveTextArea = new JTextArea();
@@ -245,6 +250,47 @@ public class UI implements MessageProcessor {
 		btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				//Save game happens here
+				String filename = new String("game_" + System.currentTimeMillis() + ".game");
+				
+				FileOutputStream f_out = null;
+				try {
+					f_out = new FileOutputStream(filename);
+				} catch (Exception e1) {
+					JOptionPane.showMessageDialog(frame,
+						    "An error occurred while saving the game! (Ref Code: FileOutputStream)",
+						    "Error",
+						    JOptionPane.PLAIN_MESSAGE);
+					e1.printStackTrace();
+				}
+				ObjectOutputStream obj_out = null;
+				try {
+					obj_out = new ObjectOutputStream (f_out);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(frame,
+						    "An error occurred while saving the game! (Ref Code: ObjectOutputStream)",
+						    "Error",
+						    JOptionPane.PLAIN_MESSAGE);
+					e1.printStackTrace();
+				}
+				try {
+					obj_out.writeObject ( boardUI );
+					JOptionPane.showMessageDialog(frame,
+						    "Game saved successfully as: " + filename,
+						    "Saved Successfully",
+						    JOptionPane.PLAIN_MESSAGE);
+					
+							f_out.close();
+							obj_out.close();
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(frame,
+						    "An error occurred while saving the game! (Ref Code: writeObject)",
+						    "Error",
+						    JOptionPane.PLAIN_MESSAGE);
+					e1.printStackTrace();
+				}
+			
+				
 			}
 		});
 		btnSave.setEnabled(false);
