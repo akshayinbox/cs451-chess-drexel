@@ -10,14 +10,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuBar;
@@ -86,13 +91,19 @@ public class UI implements MessageProcessor, Serializable {
 		
 		this.frame.setVisible(true);
 	}
-	
+
 	public ChessBoard getChessBoard() {
 		return boardUI.getChessBoard();
 	}
 	
 	public void setChessboard(ChessBoard cb) {
 		chessBoard = cb;
+	}
+	
+	/* Experimental */
+	public void setChessboardUI(ChessboardUI cbui) {
+		this.boardUI = cbui;
+		this.boardUI.repaint();
 	}
 	
 	public boolean getInitialized() {
@@ -300,6 +311,75 @@ public class UI implements MessageProcessor, Serializable {
 		btnLoad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				
+				//File Chooser
+				JFileChooser fileChooser = new JFileChooser();
+				FileInputStream f_in = null;
+				int returnVal = fileChooser.showOpenDialog(frame);
+			    if (returnVal == JFileChooser.APPROVE_OPTION) {
+			        File file = fileChooser.getSelectedFile();
+			        // What to do with the file
+       // Read from disk using FileInputStream
+					try {
+						f_in = new 
+							FileInputStream(file.getAbsolutePath());
+					} catch (FileNotFoundException e1) {
+						JOptionPane.showMessageDialog(frame,
+							    "An error occurred while loading the game! (Ref Code: FileNotFound)",
+							    "Error",
+							    JOptionPane.PLAIN_MESSAGE);
+						e1.printStackTrace();
+					}
+			    } else {
+			        System.out.println("File access cancelled by user.");
+			    }
+			    
+
+				// Read object using ObjectInputStream
+				ObjectInputStream obj_in = null;
+				try {
+					obj_in = new ObjectInputStream (f_in);
+				} catch (IOException e1) {
+					JOptionPane.showMessageDialog(frame,
+						    "An error occurred while loading the game! Make sure you selected the correct *.game file! (Ref Code: ObjectInputStream/IOException)",
+						    "Error",
+						    JOptionPane.PLAIN_MESSAGE);
+					e1.printStackTrace();
+				}
+
+				// Read an object
+				Object obj = null;
+				try {
+					obj = obj_in.readObject();
+				} catch (ClassNotFoundException | IOException e1) {
+					JOptionPane.showMessageDialog(frame,
+						    "An error occurred while loading the game! (Ref Code: readObject)",
+						    "Error",
+						    JOptionPane.PLAIN_MESSAGE);
+					e1.printStackTrace();
+				}
+				
+				//LOAD THIS boardUI object!
+				
+				boardUI = (ChessboardUI) obj;
+				boardUI.repaint();
+				frame.repaint();
+				
+				/* UI newui = null;
+				try {
+					newui = new UI((ChessboardUI) obj);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				 */
+				
+				
+				JOptionPane.showMessageDialog(frame,
+					    "Game loaded successfully!",
+					    "Loading Complete",
+					    JOptionPane.PLAIN_MESSAGE);
+				
 			}
 		});
 		menuBar.add(btnLoad);
