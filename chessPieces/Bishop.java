@@ -10,7 +10,6 @@ import chessBoard.Player;
 import chessBoard.Position;
 
 public class Bishop extends ChessPiece {
-
 	private boolean hasMoved;
 	
 	public Bishop(Player player) {

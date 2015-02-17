@@ -8,13 +8,14 @@ import chessNetwork.messages.MoveMessage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 import chessBoard.Move;
 
-public class Client {
+public class Client implements Serializable {
+	private static final long serialVersionUID = -4556458826512852351L;
 	private static final int PORT = 9879;
 	private static final String URLs[] = new String[] {
 	                                                    "localhost",

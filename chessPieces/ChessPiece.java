@@ -9,8 +9,8 @@ import chessBoard.Move;
 import chessBoard.Player;
 import chessBoard.Position;
 
-public abstract class ChessPiece {
-
+public abstract class ChessPiece implements java.io.Serializable {
+	private static final long serialVersionUID = 1009526255178159146L;
 	protected Player player;
 	protected PieceID id;
 	

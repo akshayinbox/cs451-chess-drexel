@@ -2,14 +2,16 @@ package chessNetwork.client;
 
 import chessNetwork.messages.Message;
 
+
+
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-
+import java.io.Serializable;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.Queue;
 
-public class ClientWriter implements Runnable {
+public class ClientWriter implements Runnable, Serializable {
 	private final Queue<Message> messageQueue = new ConcurrentLinkedQueue<Message>();
 	private final Semaphore availableMessages = new Semaphore(0);
 	private ObjectOutputStream out;

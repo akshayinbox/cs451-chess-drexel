@@ -5,9 +5,11 @@ import chessNetwork.messages.MessageProcessor;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.Serializable;
 
-public class ClientReader implements Runnable {
-	private ObjectInputStream in;
+public class ClientReader implements Runnable, Serializable {
+	private static final long serialVersionUID = 2165989946953642916L;
+	private transient ObjectInputStream in;
 	private MessageProcessor processor;
 
 	//imagine passing in a UI object of some kind here and saving it as a member variable

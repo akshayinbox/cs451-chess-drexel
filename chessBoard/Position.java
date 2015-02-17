@@ -1,11 +1,14 @@
 package chessBoard;
+import java.io.Serializable;
+
 import chessPieces.ChessPiece;
 import chessPieces.PieceID;
 
 
 //an interface for the piece
 
-public class Position {
+public class Position implements Serializable {
+	private static final long serialVersionUID = -6918597049271496211L;
 	private int row, col;
 	ChessPiece piece;
 	
