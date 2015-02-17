@@ -517,6 +517,7 @@ public class UI implements MessageProcessor {
 				    JOptionPane.PLAIN_MESSAGE);
 			if (totalOpTime - totalSecTaken > 0)
 				setTimers(false, minLeft, secLeft);
+				boardUI.setOpTimeLeft(totalOpTime - totalSecTaken);
 		}
 		System.out.println(message.getContent());
 	}

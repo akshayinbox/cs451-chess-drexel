@@ -44,6 +44,8 @@ public class ChessboardUI extends JPanel{
 	private JPanel board;
 	private UI windowUI;
 	private Boolean canMove;
+	private int thisSecLeft;
+	private int opSecLeft;
 	private final static Color DARK_BROWN = new Color(79, 8 ,4);
 	private final static Color LIGHT_BROWN = new Color(244, 196, 120);
 	private final static int BOARD_ROWS = 8;
@@ -87,6 +89,10 @@ public class ChessboardUI extends JPanel{
 	public Boolean getCanMove() {
 		return this.canMove;
 	}
+	
+	public void setOpTimeLeft(int secLeft) {
+		this.opSecLeft = secLeft;
+	}
 /*
 	public void setClient(Client client) {
 		this.client = client;
@@ -113,6 +119,7 @@ public class ChessboardUI extends JPanel{
 									String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
 									windowUI.addToMoveList("You: " + pieceName + " " + boardRep[m.getFrom().getRow()][m.getFrom().getCol()] + " to " + boardRep[m.getTo().getRow()][m.getTo().getCol()]);
 									windowUI.setThisSecLeft(windowUI.getThisSecLeft() - m.getTimeTaken());
+									thisSecLeft = windowUI.getThisSecLeft() - m.getTimeTaken();
 									canMove = false;
 									System.out.println(chessBoard.toString());
 								} else if (result.equals(Code.IN_CHECK))
