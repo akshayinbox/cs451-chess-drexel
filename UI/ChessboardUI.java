@@ -85,6 +85,18 @@ public class ChessboardUI extends JPanel{
 		this.chessBoard = cb;
 	}
 	
+	public void setCanMove(Boolean can) {
+		this.canMove = can;
+	}
+	
+	public Boolean getCanMove() {
+		return this.canMove;
+	}
+	
+	public void setOpTimeLeft(int secLeft) {
+		this.opSecLeft = secLeft;
+	}
+	
 	/**
 	 * After a move has been applied, fixes the UI of the board to match the
 	 * new ChessBoard.
@@ -140,7 +152,7 @@ public class ChessboardUI extends JPanel{
 		}
 	}
 	
-	public void addAllPieces(Boolean host) throws IOException {
+	public void addAllPieces(Boolean host, final Client client) throws IOException {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
 				JPanel temp = new JPanel();
