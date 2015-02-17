@@ -109,8 +109,11 @@ public class ChessBoard {
 	 * @param opponentMove The opponent's last move.
 	 */
 	public void receiveMove(Move opponentMove) {
+		//TODO: should the opposingPreviousMove save the translated or untranslated version?
+		//      additionally, should the Move class have a translate() method which either swaps the
+		//      coordinates inplace or which returns the translated move?
 		opposingPreviousMove = opponentMove;
-		applyMove(opponentMove);
+		applyMove(new Move(opponentMove.getFromTranslated(), opponentMove.getToTranslated(), opponentMove.getTimeTaken()));
 	}
 	
 	/**
@@ -193,7 +196,7 @@ public class ChessBoard {
 				
 		//check if king is moved into check, otherwise update the board to the new board
 		if (cloneBoard.kingInCheck())
-			return Code.NOT_LEGAL;
+			return Code.IN_CHECK;
 		else 
 			board = cloneBoard.getBoard();
 		

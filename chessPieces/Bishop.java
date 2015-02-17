@@ -30,10 +30,10 @@ public class Bishop extends ChessPiece {
 		//check north-west diagonal
 		for (c = col-1, r = row - 1; c >= 0 && r >= 0; c--, r--) {
 			if (board[r][c].isEmpty())
-				moves.add(new Move(cord, new Coord(r, c)));
+				moves.add(new Move(cord, new Coord(r, c), null));
 			else {
 				if (board[r][c].isEnemy(player))
-					moves.add(new Move(cord, new Coord(r, c)));
+					moves.add(new Move(cord, new Coord(r, c), null));
 				break; //encountered a piece, stop walking
 			}
 		}
@@ -41,10 +41,10 @@ public class Bishop extends ChessPiece {
 		//check north-east diagonal
 		for (r = row - 1, c = col+1; c < 8 && r >= 0; c++, r--) {
 			if (board[r][c].isEmpty())
-				moves.add(new Move(cord, new Coord(r, c)));
+				moves.add(new Move(cord, new Coord(r, c), null));
 			else {
 				if (board[r][c].isEnemy(player))
-					moves.add(new Move(cord, new Coord(r, c)));
+					moves.add(new Move(cord, new Coord(r, c), null));
 				break; //encountered a piece, stop walking
 			}
 		}
@@ -52,10 +52,10 @@ public class Bishop extends ChessPiece {
 		//check south-west diagonal
 		for (r = row + 1, c = col-1; c >= 0 && r < 8; c--, r++) {
 			if (board[r][c].isEmpty())
-				moves.add(new Move(cord, new Coord(r, c)));
+				moves.add(new Move(cord, new Coord(r, c), null));
 			else {
 				if (board[r][c].isEnemy(player))
-					moves.add(new Move(cord, new Coord(r, c)));
+					moves.add(new Move(cord, new Coord(r, c), null));
 				break; //encountered a piece, stop walking
 			}
 		}
@@ -63,10 +63,10 @@ public class Bishop extends ChessPiece {
 		//check south-east diagonal
 		for (r = row + 1, c = col+1; c < 8 && r < 8; c++, r++) {
 			if (board[r][c].isEmpty())
-				moves.add(new Move(cord, new Coord(r, c)));
+				moves.add(new Move(cord, new Coord(r, c), null));
 			else {
 				if (board[r][c].isEnemy(player))
-					moves.add(new Move(cord, new Coord(r, c)));
+					moves.add(new Move(cord, new Coord(r, c), null));
 				break; //encountered a piece, stop walking
 			}
 		}

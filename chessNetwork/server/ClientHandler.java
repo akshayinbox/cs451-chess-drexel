@@ -14,7 +14,7 @@ import java.util.concurrent.Semaphore;
 import java.util.Queue;
 
 public class ClientHandler implements Runnable {
-	private static final int MAX_WAITING = 5;//Integer.MAX_VALUE;
+	private static final int MAX_WAITING = 100;//Integer.MAX_VALUE;
 	private static final Queue<Integer> ids = new ConcurrentLinkedQueue<Integer>();
 	private static final ConcurrentMap<Integer, ClientHandler> waitingClients = new ConcurrentHashMap<Integer, ClientHandler>();
 
@@ -55,23 +55,26 @@ public class ClientHandler implements Runnable {
 				if (!establishNewGame()) {
 					socketOut.write(-1);
 					socketOut.flush();
+					socketIn.readInt();
 					clientSocket.close();
 					System.out.println("Not enough room. Client handler exiting.");
-				}	
+				}
 			}
 			else {
 				if (joinExistingGame(gameID)) {
 					//indicate that the connection was successful to the client
 					socketOut.writeInt(0);
 					socketOut.flush();
-
 					//allow the peer thread to continue
 					peer.peerSemaphore.release();
 				}
 				else {
-					socketOut.write(-1);
+					System.out.println("Game doesn't exist.");
+					socketOut.writeInt(-1);
 					socketOut.flush();
+					socketIn.readInt();
 					clientSocket.close();
+					System.out.println("Exiting.");
 					return;
 				}
 			}

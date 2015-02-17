@@ -11,18 +11,19 @@ public class Move implements Serializable {
 
 	private Coord fromPos, toPos;
 	private Coord fromPosTranslated, toPosTranslated; //move from opponent's perspective
+	private Integer timeTaken;
 	
 	/**
 	 * Constructs a move object consiting of the original position and the new position for a piece.
 	 * @param from Original position of piece.
 	 * @param to New position of piece.
 	 */
-	public Move(Coord from, Coord to) {
+	public Move(Coord from, Coord to, Integer timeTaken) {
 		this.fromPos = from;
 		this.toPos = to;
 		this.fromPosTranslated = new Coord(7 - this.fromPos.getRow(), 7 - this.fromPos.getCol());
 		this.toPosTranslated =  new Coord(7 - this.toPos.getRow(), 7 - this.toPos.getCol());
-
+		this.timeTaken = timeTaken;
 	}
 	
 	public Coord getFrom() {
@@ -48,6 +49,10 @@ public class Move implements Serializable {
 	
 	public Coord getToTranslated() {
 		return this.toPosTranslated;
+	}
+	
+	public Integer getTimeTaken() {
+		return this.timeTaken;
 	}
 	
 	@Override

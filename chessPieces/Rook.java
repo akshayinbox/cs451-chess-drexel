@@ -39,10 +39,10 @@ public class Rook extends ChessPiece {
 		//check row to left
 		for (int c = col-1; c >= 0; c--) {
 			if (board[row][c].isEmpty())
-				moves.add(new Move(cord, new Coord(row, c)));
+				moves.add(new Move(cord, new Coord(row, c), null));
 			else {
 				if (board[row][c].isEnemy(player)) 
-					moves.add(new Move(cord, new Coord(row, c)));
+					moves.add(new Move(cord, new Coord(row, c), null));
 				break; //encountered own piece or enemy piece
 			}
 		}
@@ -50,10 +50,10 @@ public class Rook extends ChessPiece {
 		//check row to right
 		for (int c = col+1; c < 8; c++) {
 			if (board[row][c].isEmpty())
-				moves.add(new Move(cord, new Coord(row, c)));
+				moves.add(new Move(cord, new Coord(row, c), null));
 			else {
 				if (board[row][c].isEnemy(player)) 
-					moves.add(new Move(cord, new Coord(row, c)));
+					moves.add(new Move(cord, new Coord(row, c), null));
 				break; //encountered own piece or enemy piece
 			}
 		}
@@ -61,10 +61,10 @@ public class Rook extends ChessPiece {
 		//check column to north
 		for (int r = row-1; r >= 0; r--) {
 			if (board[r][col].isEmpty())
-				moves.add(new Move(cord, new Coord(r, col)));
+				moves.add(new Move(cord, new Coord(r, col), null));
 			else {
 				if (board[r][col].isEnemy(player)) 
-					moves.add(new Move(cord, new Coord(r, col)));
+					moves.add(new Move(cord, new Coord(r, col), null));
 				break; //encountered own piece or enemy piece
 			}
 		}
@@ -72,10 +72,10 @@ public class Rook extends ChessPiece {
 		//check column to south
 		for (int r = row+1; r < 8; r++) {
 			if (board[r][col].isEmpty())
-				moves.add(new Move(cord, new Coord(r, col)));
+				moves.add(new Move(cord, new Coord(r, col), null));
 			else {
 				if (board[r][col].isEnemy(player)) 
-					moves.add(new Move(cord, new Coord(r, col)));
+					moves.add(new Move(cord, new Coord(r, col), null));
 				break; //encountered own piece or enemy piece
 			}
 		}

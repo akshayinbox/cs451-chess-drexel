@@ -21,7 +21,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
@@ -38,17 +40,23 @@ import chessPieces.Knight;
 import chessPieces.Pawn;
 import chessPieces.Queen;
 import chessPieces.Rook;
-
+import chessNetwork.client.Client;
 
 public class ChessboardUI extends JPanel{
 	private ChessBoard chessBoard;
 	private JPanel board;
+	private UI windowUI;
+	private Boolean canMove;
+	private int thisSecLeft;
+	private int opSecLeft;
 	private final static Color DARK_BROWN = new Color(79, 8 ,4);
 	private final static Color LIGHT_BROWN = new Color(244, 196, 120);
 	private final static int BOARD_ROWS = 8;
 	private final static int BOARD_COLS = 8;
-	
-	public ChessboardUI(JPanel panel) throws IOException {
+	private final static String[][] boardRep = new String[BOARD_ROWS][BOARD_COLS];
+
+	public ChessboardUI(JPanel panel, UI window) throws IOException {
+		windowUI = window;
 		board = panel;
 		board.setBorder(new LineBorder(Color.BLACK));
 		board.setPreferredSize(new Dimension(500, 500));
@@ -60,6 +68,7 @@ public class ChessboardUI extends JPanel{
 				square.setBorder(new EmptyBorder(5, 5, 5, 5));
 //				square.setPreferredSize(new Dimension(50, 50));
 				board.add(square);
+				boardRep[i][j] = setSquareRep(i, j);
 			}
 		}
 	}
@@ -139,14 +148,32 @@ public class ChessboardUI extends JPanel{
 				b.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseReleased(MouseEvent e) {
-						Move m = createMove(e);
-						if (m != null) {
-							System.out.println(m);
-							Code result = chessBoard.validateAndApply(m);
-							if (result.ordinal() > 0) {
-								updateBoard();
-								//uiApplyMove(e);
-								System.out.println(chessBoard.toString());
+						if (canMove) {
+							Move m = createMove(e);
+							if (m != null) {
+								System.out.println(m);
+								Code result = chessBoard.validateAndApply(m);
+								if (result.ordinal() > 0) {
+									windowUI.getThisTimer().stop();
+									updateBoard();
+									client.send(m);
+									PieceUI piece = (PieceUI)e.getSource();
+									String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
+									windowUI.addToMoveList("You: " + pieceName + " " + boardRep[m.getFrom().getRow()][m.getFrom().getCol()] + " to " + boardRep[m.getTo().getRow()][m.getTo().getCol()]);
+									windowUI.setThisSecLeft(windowUI.getThisSecLeft() - m.getTimeTaken());
+									thisSecLeft = windowUI.getThisSecLeft() - m.getTimeTaken();
+									canMove = false;
+									System.out.println(chessBoard.toString());
+								} else if (result.equals(Code.IN_CHECK))
+									JOptionPane.showMessageDialog(null,
+										    "You cannot move yourself into check.",
+										    "",
+										    JOptionPane.WARNING_MESSAGE);
+								else
+									JOptionPane.showMessageDialog(null,
+										    "Invalid Move",
+										    "",
+										    JOptionPane.WARNING_MESSAGE);
 							}
 						}
 					}
@@ -191,23 +218,62 @@ public class ChessboardUI extends JPanel{
 	public void clearAllPieces() {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
-				int compIndex = i * BOARD_COLS + j;
+				int compIndex = getComponentIndex(i, j);
 				JPanel square = (JPanel)board.getComponent(compIndex);
 				square.removeAll();
 			}
 		}
 		board.updateUI();
 	}
+
+	public void receiveMove(Move m) {
+		//apply the move to the actual model of the chess board
+		chessBoard.receiveMove(m);
+		System.out.println("After receiving move: ");
+		System.out.println(chessBoard);
+
+		//then apply it to the UI
+		Coord from = m.getFromTranslated();
+		Coord to = m.getToTranslated();
+		int fromCompIndex = getComponentIndex(from.getRow(), from.getCol());
+		int toCompIndex = getComponentIndex(to.getRow(), to.getCol());
+		//get the piece component
+		Component oldComp = ((JPanel) board.getComponent(fromCompIndex)).getComponents()[0];
+		//get the new square onto which the peice will be palced
+		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+		//then finally move the piece
+		movePiece(oldComp, newComp);
+
+		PieceUI piece = (PieceUI)oldComp;
+		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
+		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
+		
+		canMove = true;
+	}
+
+	private String setSquareRep(int row, int col) {
+		row += 1;
+		char letter = (char) (col + 65);
+		return Character.toString(letter) + Integer.toString(row);
+	}
+	
+	private int getComponentIndex(int row, int column) {
+		return row * BOARD_COLS + column;
+	}
+
+	private void movePiece(Component piece, JPanel newSquare) {
+		piece.getParent().remove(piece);
+		newSquare.removeAll();
+		newSquare.add(piece);
+		board.repaint();
+	}
 	
 	private void uiApplyMove(MouseEvent e) {
 		Component oldComp = e.getComponent();
 		JPanel newComp = (JPanel) getClosestComponent(e);
-		
-		oldComp.getParent().remove(oldComp);
-		newComp.removeAll();
-		newComp.add(oldComp);
-		board.repaint();
+		movePiece(oldComp, newComp);
 	}
+
 	private Move createMove(MouseEvent e) {
 		Component origin = e.getComponent();
 		Container square = origin.getParent();
@@ -222,8 +288,11 @@ public class ChessboardUI extends JPanel{
 		String[] newLocation = newComp.getName().split(",");
 		int newCol = Integer.parseInt(newLocation[0]);
 		int newRow = Integer.parseInt(newLocation[1]);
-		
-		Move m = new Move(new Coord(originRow, originCol), new Coord(newRow, newCol));
+		int secLeft = windowUI.getThisSecLeft();
+		int currentMin = windowUI.getThisMin();
+		int currentSec = windowUI.getThisSec();
+		int totalTime = secLeft - (60*currentMin + currentSec);
+		Move m = new Move(new Coord(originRow, originCol), new Coord(newRow, newCol), totalTime);
 		return m;
 	}
 	

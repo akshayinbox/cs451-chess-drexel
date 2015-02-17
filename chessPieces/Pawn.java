@@ -50,19 +50,19 @@ public class Pawn extends ChessPiece {
 			
 		//one square ahead
 		if (ChessBoard.validPosition(row+rowDisplacement, col) && board[row+rowDisplacement][col].isEmpty())
-			moves.add(new Move(cord, new Coord(row+rowDisplacement, col)));
+			moves.add(new Move(cord, new Coord(row+rowDisplacement, col), null));
 		
 		//TODO: Can you jump over pieces?
 		//two squares ahead
 		if (!hasMoved && ChessBoard.validPosition(row+2*rowDisplacement, col) 
 				&& board[row+2*rowDisplacement][col].isEmpty())
-			moves.add(new Move(cord, new Coord(row+2*rowDisplacement, col)));
+			moves.add(new Move(cord, new Coord(row+2*rowDisplacement, col), null));
 		
 		//attack diagonal
-		if (ChessBoard.validPosition(row+rowDisplacement, col-1) && board[row+rowDisplacement][col-1].isEnemy(player))
-			moves.add(new Move(cord, new Coord(row+rowDisplacement, col-1)));
-		if (ChessBoard.validPosition(row+rowDisplacement, col+1) && board[row+rowDisplacement][col+1].isEnemy(player))
-			moves.add(new Move(cord, new Coord(row+rowDisplacement, col+1)));	
+		if (ChessBoard.validPosition(row+rowDisplacement, col-1) && board[row+rowDisplacement][col-1].isEnemy(player));
+			moves.add(new Move(cord, new Coord(row+rowDisplacement, col-1), null));
+		if (ChessBoard.validPosition(row+rowDisplacement, col+1) && board[row+rowDisplacement][col+1].isEnemy(player));
+			moves.add(new Move(cord, new Coord(row+rowDisplacement, col+1), null));	
 			
 		//check for en Passant, only if it's player 1 as player 2 is responsible for checking if he
 		//can en passant
@@ -79,7 +79,7 @@ public class Pawn extends ChessPiece {
 				//check if piece is now one row to the left/right of this piece and on same row
 				int columnDifference = toPos.getCol() - col;
 				if ((columnDifference == 1 || columnDifference == -1) && toPos.getRow() == row) 
-					moves.add(new Move(new Coord(row, col), new Coord(row + 1, col + columnDifference)));
+					moves.add(new Move(new Coord(row, col), new Coord(row + 1, col + columnDifference), null));
 			}
 		}
 		

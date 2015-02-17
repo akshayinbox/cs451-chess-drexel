@@ -28,24 +28,24 @@ public class Knight extends ChessPiece {
 		
 		//check all 8 positions, TODO: generate the 1,2 permutations 
 		if (ChessBoard.validPosition(row-1, col-2) && board[row-1][col-2].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row-1, col-2)));
+			moves.add(new Move(cord, new Coord(row-1, col-2), null));
 		if (ChessBoard.validPosition(row-1, col+2) && board[row-1][col+2].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row-1, col+2)));	
+			moves.add(new Move(cord, new Coord(row-1, col+2), null));	
 		
 		if (ChessBoard.validPosition(row+1, col-2) && board[row+1][col-2].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row+1, col-2)));	
+			moves.add(new Move(cord, new Coord(row+1, col-2), null));	
 		if (ChessBoard.validPosition(row+1, col+2) && board[row+1][col+2].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row+1, col+2)));	
+			moves.add(new Move(cord, new Coord(row+1, col+2), null));	
 			
 		if (ChessBoard.validPosition(row-2, col+1) && board[row-2][col+1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row-2, col+1)));	
+			moves.add(new Move(cord, new Coord(row-2, col+1), null));	
 		if (ChessBoard.validPosition(row-2, col-1) && board[row-2][col-1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row-2, col-1)));	
+			moves.add(new Move(cord, new Coord(row-2, col-1), null));	
 			
 		if (ChessBoard.validPosition(row+2, col+1) && board[row+2][col+1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row+2, col+1)));	
+			moves.add(new Move(cord, new Coord(row+2, col+1), null));	
 		if (ChessBoard.validPosition(row+2, col-1) && board[row+2][col-1].isEmptyOrEnemy(player))
-			moves.add(new Move(cord, new Coord(row+2, col-1)));	
+			moves.add(new Move(cord, new Coord(row+2, col-1), null));	
 			
 		return moves;
 	}

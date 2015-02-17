@@ -21,36 +21,45 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
+import javax.swing.text.DefaultCaret;
 
 import chessBoard.ChessBoard;
+import chessBoard.Move;
 import chessBoard.Player;
+import chessNetwork.client.Client;
+import chessNetwork.messages.Message;
+import chessNetwork.messages.MessageProcessor;
+import chessNetwork.messages.MessageType;
 
-
-public class UI {
+public class UI implements MessageProcessor {
 	private final static String USER_HOST = "Host";
 	private final static String USER_JOIN = "Join";
 	private JFrame frame;
 	private ChessboardUI boardUI;
 	private ChessBoard chessBoard;
+	private Client client;
 	private JMenuBar menuBar = new JMenuBar();
 	private Boolean host;
-	private Boolean myMove;
+	private JTextArea moveTextArea = new JTextArea();
+	private JTextArea chatTextArea = new JTextArea();
 	
 	private JLabel thisCountdown = new JLabel("");
 	private JLabel opCountdown = new JLabel("");
 	
 	private Timer thisTimer;
-	private Timer opTimer;
 	
 	private int thisMin;
 	private int opMin;
 	private int thisSec;
 	private int opSec;
+	
+	private int thisSecLeft;
 	
 	private boolean initialized = false;
 	
@@ -85,10 +94,37 @@ public class UI {
 		return initialized;
 	}
 	
+	public Timer getThisTimer() {
+		return thisTimer;
+	}
+	
+	public int getThisMin() {
+		return thisMin;
+	}
+	
+	public int getThisSec() {
+		return thisSec;
+	}
+	
+	public int getThisSecLeft() {
+		return thisSecLeft;
+	}
+	
+	public void setThisSecLeft(int time) {
+		this.thisSecLeft = time;
+	}
+	
+	public void addToMoveList(String move) {
+		String currentLog = moveTextArea.getText();
+		currentLog = (currentLog.equals("")) ? currentLog + move : currentLog + '\n' + move; 
+		moveTextArea.setText(currentLog);
+	}
+	
 	private void createMenu() {
 		menuBar.setMargin(new Insets(5, 5, 5, 5));
 		frame.setJMenuBar(menuBar);
 		
+		final UI that = this;
 		JButton btnConnect = new JButton("Connect");
 		btnConnect.addActionListener(new ActionListener() {
 			@Override
@@ -99,21 +135,92 @@ public class UI {
 				if (result == JOptionPane.OK_OPTION) {
 					String hostOrJoin = connectionPanel.getGameType();
 					String timeLimit = connectionPanel.getTime();
-					timeLimit = "30 Minutes";
-					String uniqueID = connectionPanel.getID();
 					host = hostOrJoin.equals(USER_HOST);
 					boardUI.clearAllPieces();
-					fillBoard();
-					if (!timeLimit.equals("No Limit"))
-						setTimers(Integer.parseInt(timeLimit.split(" ")[0]));
+					
+					try {
+						client = new Client();
+						//boardUI.setClient(client);
+					}
+					catch (IOException e1) {
+						//TODO: couldn't connect to server
+						JOptionPane.showMessageDialog(frame,
+							    "Couldn't connect.",
+							    "",
+							    JOptionPane.WARNING_MESSAGE);
+						return;
+					}
+					
+					if (host) {
+						try {
+							int gameID = client.createNewGame();
+							//TODO: if gameID is less than zero, there are too many waiting players
+							JOptionPane.showMessageDialog(frame,
+								    "Your game ID is " + gameID,
+								    "",
+								    JOptionPane.PLAIN_MESSAGE);
+
+							client.waitForPeer();
+							client.readWrite(that);
+							
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+					else {
+						try {
+							int gameID;
+							try {
+								gameID = Integer.parseInt(connectionPanel.getID());
+							}
+							catch (NumberFormatException e1) {
+								//TODO: tell user he should only use a number as the ID
+								JOptionPane.showMessageDialog(frame,
+									    "Use only an integer.",
+									    "",
+									    JOptionPane.WARNING_MESSAGE);
+								return;
+							}
+
+							if (client.joinExistingGame(gameID))
+							{
+								client.readWrite(that);
+							}
+							else
+							{
+								JOptionPane.showMessageDialog(frame,
+									    "There are no games with that ID.",
+									    "",
+									    JOptionPane.WARNING_MESSAGE);
+								try {
+									client.close();
+								}
+								catch (Exception e1) {
+									System.out.println("Couldn't close connection.");
+								}
+								return;
+							}
+						} catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+					}
+					try {
+						boardUI.addAllPieces(host, client);
+						boardUI.setChessBoard(new ChessBoard(host));
+						boardUI.setCanMove(host);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
 					boardUI.getChessBoard().initializeBoard();
 					changeMenuButtons();
 					initialized = true;
-					if (host)
-						myMove = true;
-					System.out.println(connectionPanel.getGameType());
-					System.out.println(connectionPanel.getTime());
-					System.out.println(connectionPanel.getID());
+					if (!timeLimit.equals(""))
+						thisTimer = new Timer(1000, new TimeListener());
+						setTimers(true, Integer.parseInt(timeLimit.split(" ")[0]), 0);
+						setTimers(false, Integer.parseInt(timeLimit.split(" ")[0]), 0);
 				}
 			}
 		});
@@ -205,7 +312,10 @@ public class UI {
 		gbl_moveBorder.rowWeights = new double[]{0.0, 0.0, 1.0, Double.MIN_VALUE};
 		moveBorder.setLayout(gbl_moveBorder);
 		
-		JScrollPane moveScrollPane = new JScrollPane();
+		DefaultCaret caret = (DefaultCaret)moveTextArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
+		JScrollPane moveScrollPane = new JScrollPane(moveTextArea);
 		GridBagConstraints gbc_moveScrollPane = new GridBagConstraints();
 		gbc_moveScrollPane.gridheight = 3;
 		gbc_moveScrollPane.gridwidth = 3;
@@ -231,7 +341,7 @@ public class UI {
 		timerBorder.add(whiteTimePane);
 		whiteTimePane.setLayout(new BorderLayout(0, 0));
 		
-		JLabel whiteTimeLabel = new JLabel("White:");
+		JLabel whiteTimeLabel = new JLabel("You:");
 		whiteTimePane.add(whiteTimeLabel, BorderLayout.NORTH);
 		
 		whiteTimePane.add(thisCountdown, BorderLayout.CENTER);
@@ -240,7 +350,7 @@ public class UI {
 		timerBorder.add(blackTimePane);
 		blackTimePane.setLayout(new BorderLayout(0, 0));
 		
-		JLabel blackTimeLabel = new JLabel("Black:");
+		JLabel blackTimeLabel = new JLabel("Opponent:");
 		blackTimePane.add(blackTimeLabel, BorderLayout.NORTH);
 		
 		blackTimePane.add(opCountdown, BorderLayout.CENTER);
@@ -263,7 +373,7 @@ public class UI {
 		gbl_chatBorder.rowWeights = new double[]{0.0, 1.0, Double.MIN_VALUE};
 		chatBorder.setLayout(gbl_chatBorder);
 		
-		JTextField chatText = new JTextField();
+		final JTextField chatText = new JTextField();
 		GridBagConstraints gbc_chatText = new GridBagConstraints();
 		gbc_chatText.insets = new Insets(0, 0, 0, 5);
 		gbc_chatText.fill = GridBagConstraints.HORIZONTAL;
@@ -272,7 +382,10 @@ public class UI {
 		chatBorder.add(chatText, gbc_chatText);
 		chatText.setColumns(10);
 		
-		JScrollPane chatPane = new JScrollPane();
+		DefaultCaret caret = (DefaultCaret)chatTextArea.getCaret();
+		caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
+		
+		JScrollPane chatPane = new JScrollPane(chatTextArea);
 		GridBagConstraints gbc_chatPane = new GridBagConstraints();
 		gbc_chatPane.gridwidth = 2;
 		gbc_chatPane.insets = new Insets(0, 0, 5, 5);
@@ -283,9 +396,17 @@ public class UI {
 		chatBorder.add(chatPane, gbc_chatPane);
 		
 		JButton chatSendBtn = new JButton("Send");
-		chatSendBtn.addActionListener(new ActionListener() {
+		chatSendBtn.addMouseListener(new MouseAdapter() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void mouseClicked(MouseEvent e) {
+				String messageText = chatText.getText();
+				if (!messageText.equals("") && client != null) {
+					chatText.setText("");
+					String currentLog = chatTextArea.getText();
+					currentLog = (currentLog.equals("")) ? currentLog + "You: " + messageText : currentLog + '\n' + "You: " + messageText; 
+					chatTextArea.setText(currentLog);
+					client.send(messageText);
+				}
 			}
 		});
 		GridBagConstraints gbc_chatSendBtn = new GridBagConstraints();
@@ -312,18 +433,8 @@ public class UI {
 		boardBorder.setBackground(new Color(219, 99, 12));
 		
 		JPanel boardPane = new JPanel(new GridLayout(8, 8, 0, 0));
-		boardUI = new ChessboardUI(boardPane);
+		boardUI = new ChessboardUI(boardPane, this);
 		boardBorder.add(boardPane);
-	}
-	
-	private void fillBoard() {
-		try {
-			boardUI.addAllPieces(host);
-			boardUI.setChessBoard(new ChessBoard(host));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
 	}
 	
 	private void changeMenuButtons() {
@@ -337,18 +448,34 @@ public class UI {
 		load.setEnabled(false);
 	}
 	
-	private void setTimers(int timeLimit) {
-		thisMin = timeLimit;
-		opMin = timeLimit;
-		thisTimer = new Timer(1000, new TimeListener());
-		opTimer = new Timer(1000, new TimeListener());
+	private void setTimers(Boolean isMe, int min, int sec) {
+		if (isMe) {
+			thisMin = min;
+			thisSec = sec;
+			thisSecLeft = (60 * min) + sec;
+			String secondText = Integer.toString(thisSec);
+			if (thisSec < 10) {
+				secondText = "0" + Integer.toString(thisSec);
+			}
+			String timeText = Integer.toString(thisMin) + ":" + secondText;
+			thisCountdown.setText(timeText);
+		} else {
+			opMin = min;
+			opSec = sec;
+			String secondText = Integer.toString(opSec);
+			if (opSec < 10) {
+				secondText = "0" + Integer.toString(opSec);
+			}
+			String timeText = Integer.toString(opMin) + ":" + secondText;
+			opCountdown.setText(timeText);
+		}
 		thisTimer.start();
 	}
 	
 	private class TimeListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			if (myMove) {
+			if (boardUI.getCanMove()) {
 				if (thisSec == 0) {
 					thisMin--;
 					thisSec = 59;	
@@ -364,5 +491,34 @@ public class UI {
 				thisCountdown.setText(timeText);
 			}
 		}
+	}
+
+	@Override
+	public void process(Message message) {
+		//TODO: make these do what they're actually supposed to
+		if (message.getType() == MessageType.CHAT) {
+			String messageText = (String) message.getContent();
+			String currentLog = chatTextArea.getText();
+			currentLog = (currentLog.equals("")) ? currentLog + "Opponent: " + messageText : currentLog + '\n' + "Opponent: " + messageText;
+			chatTextArea.setText(currentLog);
+		}
+		else if (message.getType() == MessageType.MOVE) {
+			Move m = (Move) message.getContent();
+			System.out.println("applying move to UI...");
+			boardUI.receiveMove(m);
+			int totalSecTaken = m.getTimeTaken();
+			int totalOpTime = (60 * opMin) + opSec;
+			int minLeft = (totalOpTime - totalSecTaken) / 60;
+			int secLeft = (totalOpTime - totalSecTaken) % 60;
+			
+			JOptionPane.showMessageDialog(frame,
+				    "Your Move.",
+				    "",
+				    JOptionPane.PLAIN_MESSAGE);
+			if (totalOpTime - totalSecTaken > 0)
+				setTimers(false, minLeft, secLeft);
+				boardUI.setOpTimeLeft(totalOpTime - totalSecTaken);
+		}
+		System.out.println(message.getContent());
 	}
 }
