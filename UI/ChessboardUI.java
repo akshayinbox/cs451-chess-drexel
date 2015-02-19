@@ -80,6 +80,22 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return this.board;
 	}
 	
+	public void repaintBoard() {
+		for( Component p : board.getComponents()) {
+			((JPanel) p).updateUI();
+			//**TESTING/DEBUGGING CODE BELOW ****//
+			for(Component piece : ((JPanel) p).getComponents()) {
+				piece.repaint();
+				System.out.println(((PieceUI) piece).getPlayer().toString() + " " + ((PieceUI) piece).getPiece().toString());
+			}
+			//***TESTING/DEBUGGING CODE ABOVE****//
+			
+			
+		}
+		System.out.println("Length = " + board.getComponents().length);
+		board.repaint();
+	}
+	
 	public void setChessBoard(ChessBoard cb) {
 		this.chessBoard = cb;
 	}

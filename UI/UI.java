@@ -52,7 +52,6 @@ public class UI implements MessageProcessor, Serializable {
 	private final static String USER_JOIN = "Join";
 	private JFrame frame;
 	private ChessboardUI boardUI;
-	private ChessBoard chessBoard;
 	private transient Client client;
 	private JMenuBar menuBar = new JMenuBar();
 	private Boolean host;
@@ -94,16 +93,6 @@ public class UI implements MessageProcessor, Serializable {
 
 	public ChessBoard getChessBoard() {
 		return boardUI.getChessBoard();
-	}
-	
-	public void setChessboard(ChessBoard cb) {
-		chessBoard = cb;
-	}
-	
-	/* Experimental */
-	public void setChessboardUI(ChessboardUI cbui) {
-		this.boardUI = cbui;
-		this.boardUI.repaint();
 	}
 	
 	public boolean getInitialized() {
@@ -362,17 +351,10 @@ public class UI implements MessageProcessor, Serializable {
 				//LOAD THIS boardUI object!
 				
 				boardUI = (ChessboardUI) obj;
+				boardUI.repaintBoard();
+				boardUI.updateUI();
 				boardUI.repaint();
-				frame.repaint();
-				
-				/* UI newui = null;
-				try {
-					newui = new UI((ChessboardUI) obj);
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}
-				 */
+				System.out.println(boardUI.getChessBoard().toString());
 				
 				
 				JOptionPane.showMessageDialog(frame,
