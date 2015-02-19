@@ -8,5 +8,9 @@ public enum Code {
 	private Code(int code) {
 		this.code = code;
 	}
+	
+	public int getCode() {
+		return code;
+	}
 
 }

@@ -125,6 +125,8 @@ public class ChessboardUI extends JPanel{
 					}
 					//piece moved to square and displaced previous piece
 					else if(!pos.getPiece().toString().equals(pUI.getPiece().toString())) {
+						System.out.println("Chessboard says " + pos.getPiece().toString());
+						System.out.println(pUI.getPiece().toString());
 						after.add(square);
 						afterId.add(pos.getPiece().toString());
 					}
@@ -165,9 +167,10 @@ public class ChessboardUI extends JPanel{
 							if (m != null) {
 								System.out.println(m);
 								Code result = chessBoard.validateAndApply(m);
-								if (result.ordinal() > 0) {
+								if (result.getCode() > 0) {
 									windowUI.getThisTimer().stop();
 									updateBoard();
+									//uiApplyMove(e);
 									client.send(m);
 									PieceUI piece = (PieceUI)e.getSource();
 									String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
@@ -193,28 +196,36 @@ public class ChessboardUI extends JPanel{
 				b.setBorder(BorderFactory.createEmptyBorder());
 				b.setContentAreaFilled(false);
 //				System.out.println(i + "," + j);
-				int compIndex = 0;
-				if (host)
-					compIndex = i * BOARD_COLS + j;
-				else
-					compIndex = (BOARD_COLS*BOARD_ROWS - 1) - (i * BOARD_COLS + j);
+				//int compIndex = 0;
+//				if (host)
+					int compIndex = i * BOARD_COLS + j;
+					
+					if(!host) {
+						if (j == 3)
+							compIndex = compIndex + 1;
+						else if (j == 4)
+							compIndex = compIndex - 1;
+					}
+//				else
+//					compIndex = (BOARD_COLS*BOARD_ROWS - 1) - (i * BOARD_COLS + j);
 				switch(i) {
 					case 0:
 					case 7: {
+						//PROBLEM: player who joins has his pieces labled as PLAYER2
 						switch(j) {
 						case 0:
-						case 7: {b = addRook(b, i); temp = (JPanel)board.getComponent(compIndex); break;}
+						case 7: {b = addRook(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
 						case 1:
-						case 6: {b = addKnight(b, i); temp = (JPanel)board.getComponent(compIndex); break;}
+						case 6: {b = addKnight(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
 						case 2:
-						case 5: {b = addBishop(b, i); temp = (JPanel)board.getComponent(compIndex); break;}
-						case 3: {b = addQueen(b, i); temp = (JPanel)board.getComponent(compIndex); break;}
-						case 4: {b = addKing(b, i); temp = (JPanel)board.getComponent(compIndex); break;}
+						case 5: {b = addBishop(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
+						case 3: {b = addQueen(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
+						case 4: {b = addKing(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
 						}
 						break;
 					}
 					case 1: 
-					case 6: {b = addPawn(b, i); temp = (JPanel)board.getComponent(compIndex); break;}
+					case 6: {b = addPawn(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
 					
 				}
 //				System.out.println(temp);
@@ -243,23 +254,23 @@ public class ChessboardUI extends JPanel{
 		chessBoard.receiveMove(m);
 		System.out.println("After receiving move: ");
 		System.out.println(chessBoard);
-
-		//then apply it to the UI
-		Coord from = m.getFromTranslated();
-		Coord to = m.getToTranslated();
-		int fromCompIndex = getComponentIndex(from.getRow(), from.getCol());
-		int toCompIndex = getComponentIndex(to.getRow(), to.getCol());
-		//get the piece component
-		Component oldComp = ((JPanel) board.getComponent(fromCompIndex)).getComponents()[0];
-		//get the new square onto which the peice will be palced
-		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
-		//then finally move the piece
-		movePiece(oldComp, newComp);
-
-		PieceUI piece = (PieceUI)oldComp;
-		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
-		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
-		
+		updateBoard();
+//		//then apply it to the UI
+//		Coord from = m.getFromTranslated();
+//		Coord to = m.getToTranslated();
+//		int fromCompIndex = getComponentIndex(from.getRow(), from.getCol());
+//		int toCompIndex = getComponentIndex(to.getRow(), to.getCol());
+//		//get the piece component
+//		Component oldComp = ((JPanel) board.getComponent(fromCompIndex)).getComponents()[0];
+//		//get the new square onto which the peice will be palced
+//		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+//		//then finally move the piece
+//		movePiece(oldComp, newComp);
+//
+//		PieceUI piece = (PieceUI)oldComp;
+//		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
+//		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
+//		
 		canMove = true;
 	}
 
@@ -318,30 +329,43 @@ public class ChessboardUI extends JPanel{
 		return board.getComponentAt(x + comX, y + comY);
 	}
 		
-	private PieceUI addPawn(PieceUI button, int row) throws IOException {
+	private PieceUI addPawn(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
 		if (row == 1) {
-			buttonIcon = ImageIO.read(new File("pieces/BrownP_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/BrownP_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/WhiteP_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
-			buttonIcon = ImageIO.read(new File("pieces/WhiteP_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/WhiteP_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/BrownP_board.png"));
 			playerCode = Player.PLAYER1;
 		}
+		
 		button.setIcon(new ImageIcon(buttonIcon));
 		button.setPlayer(playerCode);
 		button.setPiece(new Pawn(playerCode));
 		return button;
 	}
 	
-	private PieceUI addRook(PieceUI button, int row) throws IOException {
+	private PieceUI addRook(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
 		if (row == 0) {
-			buttonIcon = ImageIO.read(new File("pieces/BrownR_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/BrownR_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/WhiteR_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
-			buttonIcon = ImageIO.read(new File("pieces/WhiteR_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/WhiteR_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/BrownR_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -350,14 +374,20 @@ public class ChessboardUI extends JPanel{
 		return button;
 	}
 	
-	private PieceUI addKnight(PieceUI button, int row) throws IOException {
+	private PieceUI addKnight(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
 		if (row == 0) {
-			buttonIcon = ImageIO.read(new File("pieces/BrownN_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/BrownN_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/WhiteN_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
-			buttonIcon = ImageIO.read(new File("pieces/WhiteN_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/WhiteN_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/BrownN_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -366,14 +396,20 @@ public class ChessboardUI extends JPanel{
 		return button;
 	}
 	
-	private PieceUI addBishop(PieceUI button, int row) throws IOException {
+	private PieceUI addBishop(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
 		if (row == 0) {
-			buttonIcon = ImageIO.read(new File("pieces/BrownB_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/BrownB_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/WhiteB_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
-			buttonIcon = ImageIO.read(new File("pieces/WhiteB_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/WhiteB_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/BrownB_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -382,14 +418,20 @@ public class ChessboardUI extends JPanel{
 		return button;
 	}
 	
-	private PieceUI addQueen(PieceUI button, int row) throws IOException {
+	private PieceUI addQueen(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
 		if (row == 0) {
-			buttonIcon = ImageIO.read(new File("pieces/BrownQ_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/BrownQ_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/WhiteQ_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
-			buttonIcon = ImageIO.read(new File("pieces/WhiteQ_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/WhiteQ_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/BrownQ_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -398,14 +440,20 @@ public class ChessboardUI extends JPanel{
 		return button;
 	}
 	
-	private PieceUI addKing(PieceUI button, int row) throws IOException {
+	private PieceUI addKing(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
 		if (row == 0) {
-			buttonIcon = ImageIO.read(new File("pieces/BrownK_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/BrownK_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/WhiteK_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
-			buttonIcon = ImageIO.read(new File("pieces/WhiteK_board.png"));
+			if (isHost)
+				buttonIcon = ImageIO.read(new File("pieces/WhiteK_board.png"));
+			else
+				buttonIcon = ImageIO.read(new File("pieces/BrownK_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));

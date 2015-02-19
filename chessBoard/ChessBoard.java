@@ -141,13 +141,13 @@ public class ChessBoard {
 		//check if castle was applied and update rook
 		if (returnCode == Code.CASTLE_LEFT) {
 			Position rookFrom = board[fromCoord.getRow()][0];
-			Position rookTo = board[fromCoord.getRow()][3];
+			Position rookTo = board[fromCoord.getRow()][fromCoord.getCol() -1];
 			rookTo.addPiece(rookFrom.getPiece());
 			rookFrom.clearPiece();
 		}
 		else if (returnCode == Code.CASTLE_RIGHT) {
 			Position rookFrom = board[fromCoord.getRow()][7];
-			Position rookTo = board[fromCoord.getRow()][5];
+			Position rookTo = board[fromCoord.getRow()][fromCoord.getCol() + 1];
 			rookTo.addPiece(rookFrom.getPiece());
 			rookFrom.clearPiece();
 		}

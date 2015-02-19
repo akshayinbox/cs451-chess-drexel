@@ -78,41 +78,47 @@ public class King extends ChessPiece {
 			//check left rook
 			if (board[7][0].isOwnType(PieceID.ROOK)) {
 				
-				boolean empty1 = board[7][1].isEmpty();
-			    boolean empty2 = board[7][2].isEmpty();
-			    boolean empty3 = board[7][3].isEmpty();
+				
+				//TODO: depends on starting ponti of king, find where king is
+				//then go through positions to left (could be 3 or 4)! YOu also already know 
+				//king never moved.
+				
+				boolean leftSideEmpty = true;
+				for (int i = col-1; i > 0; i--) 
+					leftSideEmpty = leftSideEmpty && board[7][i].isEmpty();
 				
 				Rook left = (Rook) board[7][0].getPiece();
 				boolean rookMoved = left.hasMoved();
 				
 				//check if position king is moving through would put in check
 				ChessBoard boardClone = new ChessBoard(cb);
-				Coord kingFrom = new Coord(7, 4);
-				Coord kingThrough = new Coord(7, 3);
+				Coord kingFrom = new Coord(row, col);
+				Coord kingThrough = new Coord(row, col-1);
 				boardClone.applyMove(new Move(kingFrom, kingThrough, null));
 				boolean inCheckThrough = boardClone.kingInCheck();
 				
-				if(empty1 && empty2 && empty3 && !rookMoved && !inCheckThrough)
+				if(leftSideEmpty && !rookMoved && !inCheckThrough)
 					moves.add(new Move(cord, new Coord(row, col-2), null));
 			}
 			
 			//check right rook
 			if (board[7][0].isOwnType(PieceID.ROOK)) {
 				
-				boolean empty1 = board[7][5].isEmpty();
-			    boolean empty2 = board[7][6].isEmpty();
+				boolean rightSideEmpty = true;
+				for (int i = col+1; i < 7; i++) 
+					rightSideEmpty = rightSideEmpty && board[7][i].isEmpty();
 				
 				Rook right = (Rook) board[7][7].getPiece();
 				boolean rookMoved = right.hasMoved();
 				
 				//check if position king is moving through would put in check
 				ChessBoard boardClone = new ChessBoard(cb);
-				Coord kingFrom = new Coord(0, 4);
-				Coord kingThrough = new Coord(0, 5);
+				Coord kingFrom = new Coord(7, col);
+				Coord kingThrough = new Coord(7, col+1);
 				boardClone.applyMove(new Move(kingFrom, kingThrough, null));
 				boolean inCheckThrough = boardClone.kingInCheck();
 				
-				if(empty1 && empty2 && !rookMoved && !inCheckThrough)
+				if(rightSideEmpty && !rookMoved && !inCheckThrough)
 					moves.add(new Move(cord, new Coord(row, col+2), null));
 			}
 		}
