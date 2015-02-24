@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-
+import java.io.Serializable;
 import java.net.Socket;
-
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 import java.util.Queue;
 
-public class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable, Serializable {
+	private static final long serialVersionUID = -6844795542481644889L;
 	private static final int MAX_WAITING = 100;//Integer.MAX_VALUE;
 	private static final Queue<Integer> ids = new ConcurrentLinkedQueue<Integer>();
 	private static final ConcurrentMap<Integer, ClientHandler> waitingClients = new ConcurrentHashMap<Integer, ClientHandler>();

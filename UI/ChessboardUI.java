@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.io.Serializable;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -42,10 +43,11 @@ import chessPieces.Queen;
 import chessPieces.Rook;
 import chessNetwork.client.Client;
 
-public class ChessboardUI extends JPanel{
+public class ChessboardUI extends JPanel implements Serializable {
+	private static final long serialVersionUID = -5553944313833181921L;
 	private ChessBoard chessBoard;
 	private JPanel board;
-	private UI windowUI;
+	private transient UI windowUI;
 	private Boolean canMove;
 	private int thisSecLeft;
 	private int opSecLeft;
@@ -79,6 +81,22 @@ public class ChessboardUI extends JPanel{
 	
 	public JPanel getBoardUI() {
 		return this.board;
+	}
+	
+	public void repaintBoard() {
+		for( Component p : board.getComponents()) {
+			((JPanel) p).updateUI();
+			//**TESTING/DEBUGGING CODE BELOW ****//
+			for(Component piece : ((JPanel) p).getComponents()) {
+				piece.repaint();
+				System.out.println(((PieceUI) piece).getPlayer().toString() + " " + ((PieceUI) piece).getPiece().toString());
+			}
+			//***TESTING/DEBUGGING CODE ABOVE****//
+			
+			
+		}
+		System.out.println("Length = " + board.getComponents().length);
+		board.repaint();
 	}
 	
 	public void setChessBoard(ChessBoard cb) {
@@ -269,7 +287,7 @@ public class ChessboardUI extends JPanel{
 
 		PieceUI piece = (PieceUI)oldComp;
 		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
-		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
+		windowUI.addToMoveList("Opp: " + pieceName + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
 		updateBoard();
 		canMove = true;
 	}

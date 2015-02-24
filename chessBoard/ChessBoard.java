@@ -1,5 +1,6 @@
 package chessBoard;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import chessPieces.Bishop;
@@ -17,8 +18,8 @@ import chessPieces.Rook;
  *
  */
 
-public class ChessBoard {
-
+public class ChessBoard  implements Serializable {
+	private static final long serialVersionUID = -1372026691004024485L;
 	private Position[][] board;
 	private Move opposingPreviousMove;
 	private boolean isHost;
