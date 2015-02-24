@@ -254,23 +254,23 @@ public class ChessboardUI extends JPanel{
 		chessBoard.receiveMove(m);
 		System.out.println("After receiving move: ");
 		System.out.println(chessBoard);
-		updateBoard();
+
 //		//then apply it to the UI
-//		Coord from = m.getFromTranslated();
-//		Coord to = m.getToTranslated();
-//		int fromCompIndex = getComponentIndex(from.getRow(), from.getCol());
-//		int toCompIndex = getComponentIndex(to.getRow(), to.getCol());
-//		//get the piece component
-//		Component oldComp = ((JPanel) board.getComponent(fromCompIndex)).getComponents()[0];
-//		//get the new square onto which the peice will be palced
-//		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
-//		//then finally move the piece
-//		movePiece(oldComp, newComp);
-//
-//		PieceUI piece = (PieceUI)oldComp;
-//		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
-//		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
-//		
+		Coord from = m.getFromTranslated();
+		Coord to = m.getToTranslated();
+		int fromCompIndex = getComponentIndex(from.getRow(), from.getCol());
+		int toCompIndex = getComponentIndex(to.getRow(), to.getCol());
+		//get the piece component
+		Component oldComp = ((JPanel) board.getComponent(fromCompIndex)).getComponents()[0];
+		//get the new square onto which the peice will be palced
+		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+		//then finally move the piece
+		//movePiece(oldComp, newComp);
+
+		PieceUI piece = (PieceUI)oldComp;
+		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
+		windowUI.addToMoveList("Opp: " + " " + boardRep[from.getRow()][from.getCol()] + " to " + boardRep[to.getRow()][to.getCol()]);
+		updateBoard();
 		canMove = true;
 	}
 
