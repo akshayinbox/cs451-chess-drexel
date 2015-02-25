@@ -52,16 +52,15 @@ public class Pawn extends ChessPiece {
 		if (ChessBoard.validPosition(row+rowDisplacement, col) && board[row+rowDisplacement][col].isEmpty())
 			moves.add(new Move(cord, new Coord(row+rowDisplacement, col), null));
 		
-		//TODO: Can you jump over pieces?
 		//two squares ahead
 		if (!hasMoved && ChessBoard.validPosition(row+2*rowDisplacement, col) 
-				&& board[row+2*rowDisplacement][col].isEmpty())
+				&& board[row+2*rowDisplacement][col].isEmpty() && board[row+1*rowDisplacement][col].isEmpty())
 			moves.add(new Move(cord, new Coord(row+2*rowDisplacement, col), null));
 		
 		//attack diagonal
-		if (ChessBoard.validPosition(row+rowDisplacement, col-1) && board[row+rowDisplacement][col-1].isEnemy(player));
+		if (ChessBoard.validPosition(row+rowDisplacement, col-1) && board[row+rowDisplacement][col-1].isEnemy(player))
 			moves.add(new Move(cord, new Coord(row+rowDisplacement, col-1), null));
-		if (ChessBoard.validPosition(row+rowDisplacement, col+1) && board[row+rowDisplacement][col+1].isEnemy(player));
+		if (ChessBoard.validPosition(row+rowDisplacement, col+1) && board[row+rowDisplacement][col+1].isEnemy(player))
 			moves.add(new Move(cord, new Coord(row+rowDisplacement, col+1), null));	
 			
 		//check for en Passant, only if it's player 1 as player 2 is responsible for checking if he
