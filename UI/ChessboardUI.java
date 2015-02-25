@@ -170,6 +170,16 @@ public class ChessboardUI extends JPanel implements Serializable {
 			}
 		}
 		
+		for (int i = 0; i < before.size(); i++) {
+			JPanel oldComp = before.get(i);
+			if (oldComp.getComponentCount() == 0)
+				continue;
+			PieceUI pUI = (PieceUI) oldComp.getComponent(0);
+			if (pUI.getPiece().toString().equals(beforeId.get(i))) {
+				oldComp.removeAll();
+			}
+		}
+		
 		board.repaint();
 	}
 	
