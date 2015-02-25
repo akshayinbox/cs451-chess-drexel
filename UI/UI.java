@@ -61,7 +61,7 @@ public class UI implements MessageProcessor, Serializable {
 	private JLabel thisCountdown = new JLabel("");
 	private JLabel opCountdown = new JLabel("");
 	
-	private Timer thisTimer;
+	private Timer thisTimer = null;
 	
 	private int thisMin;
 	private int opMin;
@@ -222,10 +222,11 @@ public class UI implements MessageProcessor, Serializable {
 					boardUI.getChessBoard().initializeBoard();
 					changeMenuButtons();
 					initialized = true;
-					if (!timeLimit.equals(""))
+					if (!timeLimit.equals("No Limit")) {
 						thisTimer = new Timer(1000, new TimeListener());
 						setTimers(true, Integer.parseInt(timeLimit.split(" ")[0]), 0);
 						setTimers(false, Integer.parseInt(timeLimit.split(" ")[0]), 0);
+					}
 				}
 			}
 		});

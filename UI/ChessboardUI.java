@@ -166,10 +166,11 @@ public class ChessboardUI extends JPanel implements Serializable {
 					JPanel newComp = after.get(i);
 					newComp.removeAll();
 					newComp.add(oldComp.getComponent(0));
-					board.repaint();
-				}	
+				}
 			}
 		}
+		
+		board.repaint();
 	}
 	
 	public void addAllPieces(Boolean host, final Client client) throws IOException {
@@ -186,7 +187,8 @@ public class ChessboardUI extends JPanel implements Serializable {
 								System.out.println(m);
 								Code result = chessBoard.validateAndApply(m);
 								if (result.getCode() > 0) {
-									windowUI.getThisTimer().stop();
+									if (windowUI.getThisTimer() != null)
+										windowUI.getThisTimer().stop();
 									updateBoard();
 									//uiApplyMove(e);
 									client.send(m);
