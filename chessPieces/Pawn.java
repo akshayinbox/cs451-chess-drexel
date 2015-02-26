@@ -68,8 +68,8 @@ public class Pawn extends ChessPiece {
 		Move lastMove = cb.getPreviousMove();
 	
 		if (player == Player.PLAYER1 && lastMove != null) {
-			Coord fromPos = lastMove.getFrom();
-			Coord toPos = lastMove.getTo();
+			Coord fromPos = lastMove.getFromTranslated();
+			Coord toPos = lastMove.getToTranslated();
 			
 			//check if opposing pawn moved by 2 spaces
 			if (board[toPos.getRow()][toPos.getCol()].isOpposingType(PieceID.PAWN) &&
@@ -77,8 +77,8 @@ public class Pawn extends ChessPiece {
 				
 				//check if piece is now one row to the left/right of this piece and on same row
 				int columnDifference = toPos.getCol() - col;
-				if ((columnDifference == 1 || columnDifference == -1) && toPos.getRow() == row) 
-					moves.add(new Move(new Coord(row, col), new Coord(row + 1, col + columnDifference), null));
+				if ((columnDifference == 1 || columnDifference == -1) && toPos.getRow() == row)
+					moves.add(new Move(new Coord(row, col), new Coord(row - 1, col + columnDifference), null));
 			}
 		}
 		

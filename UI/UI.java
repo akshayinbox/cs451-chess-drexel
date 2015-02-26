@@ -620,13 +620,14 @@ public class UI implements MessageProcessor, Serializable {
 			int minLeft = (totalOpTime - totalSecTaken) / 60;
 			int secLeft = (totalOpTime - totalSecTaken) % 60;
 			
+			if (totalOpTime - totalSecTaken > 0) {
+				setTimers(false, minLeft, secLeft);
+				boardUI.setOpTimeLeft(totalOpTime - totalSecTaken);
+			}
 			JOptionPane.showMessageDialog(frame,
 				    "Your Move.",
 				    "",
 				    JOptionPane.PLAIN_MESSAGE);
-			if (totalOpTime - totalSecTaken > 0)
-				setTimers(false, minLeft, secLeft);
-				boardUI.setOpTimeLeft(totalOpTime - totalSecTaken);
 		}
 		System.out.println(message.getContent());
 	}
