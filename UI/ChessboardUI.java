@@ -31,6 +31,7 @@ import javax.swing.border.LineBorder;
 import chessBoard.ChessBoard;
 import chessBoard.Code;
 import chessBoard.Coord;
+import chessBoard.GameStatus;
 import chessBoard.Move;
 import chessBoard.Player;
 import chessBoard.Position;

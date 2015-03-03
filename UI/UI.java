@@ -39,6 +39,7 @@ import javax.swing.border.TitledBorder;
 import javax.swing.text.DefaultCaret;
 
 import chessBoard.ChessBoard;
+import chessBoard.GameStatus;
 import chessBoard.Move;
 import chessBoard.Player;
 import chessNetwork.client.Client;
@@ -365,6 +366,8 @@ public class UI implements MessageProcessor, Serializable {
 				
 			}
 		});
+		// Since we don't have save or load working, keep disabled.
+		btnLoad.setEnabled(false);
 		menuBar.add(btnLoad);
 	}
 	
@@ -553,7 +556,8 @@ public class UI implements MessageProcessor, Serializable {
 		JButton load = (JButton)menuBar.getComponent(4);
 		connect.setEnabled(false);
 		resign.setEnabled(true);
-		save.setEnabled(true);
+		// Since we don't have save/load working, disable buttons
+//		save.setEnabled(true);
 		load.setEnabled(false);
 	}
 	
@@ -624,10 +628,26 @@ public class UI implements MessageProcessor, Serializable {
 				setTimers(false, minLeft, secLeft);
 				boardUI.setOpTimeLeft(totalOpTime - totalSecTaken);
 			}
+			String text = "Your move.";
+			int type = JOptionPane.PLAIN_MESSAGE;
+			ChessBoard chessBoard = boardUI.getChessBoard();
+			if (chessBoard.kingInCheck()) {
+				text = "You are in check.";
+				GameStatus gameOver = chessBoard.gameOver();
+				if (gameOver == GameStatus.CHECKMATE) {
+					text = "Checkmate!";
+					boardUI.setCanMove(false);
+				}
+				else if (gameOver == GameStatus.STALEMATE) {
+					text = "Stalemate!";
+					boardUI.setCanMove(false);
+				}
+				type = JOptionPane.WARNING_MESSAGE;
+			}
 			JOptionPane.showMessageDialog(frame,
-				    "Your Move.",
+				    text,
 				    "",
-				    JOptionPane.PLAIN_MESSAGE);
+				    type);
 		}
 		System.out.println(message.getContent());
 	}
