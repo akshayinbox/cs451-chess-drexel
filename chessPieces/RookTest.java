@@ -35,7 +35,6 @@ public class RookTest {
 		//put rook in middle of board, surround by opposing pawns
 		cb.forceMove(new Move(new Coord(7,0), new Coord(4, 4)));
 		Coord fromPos = new Coord(4,4);
-		Coord toPos;
 		
 		cb.addPawns(Player.PLAYER2, new Coord(4, 0), new Coord(4, 7), new Coord(6, 4));
 		ArrayList<Move> moves = cb.getMoves(fromPos);
@@ -43,16 +42,7 @@ public class RookTest {
 		//should have 12 available moves
 		assertTrue(moves.size() == 12);
 		
-		/* Moves should be horizontal/vertical, i.e. the to position
-		should have the same row xor the same column. 
-		Also validate to-positions are valid positions.
-		*/
-		for (int i = 0; i < moves.size(); i++) {
-			toPos = moves.get(i).getTo();
-			assertTrue(toPos.getRow() == 4 ^ toPos.getCol() == 4);
-			assertTrue(ChessBoard.validPosition(toPos.getRow(), toPos.getCol()));
-		}
-		
+		validateRookMoves(moves, fromPos);	
 	}
 	
 	/**
@@ -65,25 +55,14 @@ public class RookTest {
 		//put rook in middle of board, surround by own pawns
 		cb.forceMove(new Move(new Coord(7,0), new Coord(4, 4)));
 		Coord fromPos = new Coord(4,4);
-		Coord toPos;
 		
 		cb.addPawns(Player.PLAYER1, new Coord(4, 0), new Coord(4, 7), new Coord(1, 4));
 		ArrayList<Move> moves = cb.getMoves(fromPos);
 		
-		//should have 12 available moves
+		//should have 8 available moves
 		assertTrue(moves.size() == 8);
 
-		
-		/* Moves should be horizontal/vertical, i.e. the to position
-		should have the same row xor the same column. 
-		Also validate to-positions are valid positions.
-		*/
-		for (int i = 0; i < moves.size(); i++) {
-			toPos = moves.get(i).getTo();
-			assertTrue(toPos.getRow() == 4 ^ toPos.getCol() == 4);
-			assertTrue(ChessBoard.validPosition(toPos.getRow(), toPos.getCol()));
-		}
-		
+		validateRookMoves(moves, fromPos);		
 	}
 	
 	/**
@@ -96,24 +75,13 @@ public class RookTest {
 		//put rook in middle of board, clear rest of board
 		cb.forceMove(new Move(new Coord(7,0), new Coord(4, 4)));
 		Coord fromPos = new Coord(4,4);
-		Coord toPos;
 		cb.clearBoardExcept(fromPos);
 		ArrayList<Move> moves = cb.getMoves(fromPos);
 		
 		//should have 14 available moves
 		assertTrue(moves.size() == 14);
 
-		
-		/* Moves should be horizontal/vertical, i.e. the to position
-		should have the same row xor the same column. 
-		Also validate to-positions are valid positions.
-		*/
-		for (int i = 0; i < moves.size(); i++) {
-			toPos = moves.get(i).getTo();
-			assertTrue(toPos.getRow() == 4 ^ toPos.getCol() == 4);
-			assertTrue(ChessBoard.validPosition(toPos.getRow(), toPos.getCol()));
-		}
-		
+		validateRookMoves(moves, fromPos);
 	}
 	
 	/**
@@ -160,6 +128,31 @@ public class RookTest {
 	public void testHasMoved() {
 		rook = new Rook(Player.PLAYER2, true);
 		assertTrue(rook.hasMoved());
+	}
+	
+	/** Moves should be horizontal/vertical, i.e. the to position
+	should have the same row xor the same column. 
+	Also validate to-positions are valid positions.
+	*/
+	public boolean validateRookMoves(ArrayList<Move> moves, Coord fromPos) {
+		
+		//make sure no duplicate moves, i.e. all unique
+		for (int i = 0; i < moves.size(); i++) {
+			for (int j = i+1; j < moves.size(); j++) {
+				if (moves.get(i).equals(moves.get(j)))
+						return false;
+			}
+		}
+		
+		Coord toPos;
+		for (int i = 0; i < moves.size(); i++) {
+			toPos = moves.get(i).getTo();
+			if(!(toPos.getRow() == fromPos.getRow() ^ toPos.getCol() == fromPos.getCol()))
+				return false;
+			if(!ChessBoard.validPosition(toPos.getRow(), toPos.getCol()))
+				return false;
+		}
+		return true;
 	}
 
 }
