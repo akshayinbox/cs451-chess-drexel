@@ -53,11 +53,11 @@ public class ClientHandler implements Runnable, Serializable {
 		try {
 			if (gameID < 0) {
 				if (!establishNewGame()) {
-					socketOut.write(-1);
+					socketOut.writeInt(-1);
 					socketOut.flush();
-					socketIn.readInt();
 					clientSocket.close();
 					System.out.println("Not enough room. Client handler exiting.");
+					return;
 				}
 			}
 			else {
