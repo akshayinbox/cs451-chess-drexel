@@ -315,4 +315,50 @@ public class ChessBoard  implements Serializable {
 	}
 	
 	
+	
+	/******** FUNCTIONS FOR TESTING ********/
+	
+	/* Manually move piece from one position to another, don't check for validity */
+	public void forceMove(Move move) {
+		Coord fromCoord = move.getFrom();
+		Coord toCoord = move.getTo();
+		Position fromPosition = board[fromCoord.getRow()][fromCoord.getCol()];
+		Position toPosition = board[toCoord.getRow()][toCoord.getCol()];
+		
+		toPosition.addPiece(fromPosition.getPiece());
+		fromPosition.clearPiece();
+	}
+	
+	/* Add pawns to various locations for testing available moves */
+	public void addPawns(Player player, Coord... coords) {
+		for (Coord c: coords) {
+			board[c.getRow()][c.getCol()].addPiece(new Pawn(player));
+		}
+	}
+	
+	
+	/* Clear entire row */
+	public void clearRow(int row) {
+		for(int c = 0; c < 8; c++) 
+			board[row][c].clearPiece();
+	}
+	
+	/* Clear board except for particular position */
+	public void clearBoardExcept(Coord coord) {
+		for (int r = 0; r < 8; r++) {
+			for (int c = 0; c < 8; c++) {
+				if (r == coord.getRow() && c == coord.getCol())
+					continue;
+				else
+					board[r][c].clearPiece();
+			}
+		}
+	}
+	
+	/* Get moves available at position */
+	public ArrayList<Move> getMoves(Coord cord) {
+		return board[cord.getRow()][cord.getCol()].getPiece().getMoves(this, new Coord(cord.getRow(), cord.getCol()));
+	}
+	
+	
 }

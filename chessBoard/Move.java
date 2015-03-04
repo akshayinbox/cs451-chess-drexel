@@ -14,7 +14,7 @@ public class Move implements Serializable {
 	private Integer timeTaken;
 	
 	/**
-	 * Constructs a move object consiting of the original position and the new position for a piece.
+	 * Constructs a move object consisting of the original position and the new position for a piece.
 	 * @param from Original position of piece.
 	 * @param to New position of piece.
 	 */
@@ -24,6 +24,12 @@ public class Move implements Serializable {
 		this.fromPosTranslated = new Coord(7 - this.fromPos.getRow(), 7 - this.fromPos.getCol());
 		this.toPosTranslated =  new Coord(7 - this.toPos.getRow(), 7 - this.toPos.getCol());
 		this.timeTaken = timeTaken;
+	}
+	
+	public Move(Coord from, Coord to) {
+		this.fromPos = from;
+		this.toPos = to;
+		this.timeTaken = 0;
 	}
 	
 	public Coord getFrom() {
