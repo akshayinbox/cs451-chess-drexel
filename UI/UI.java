@@ -381,6 +381,18 @@ public class UI implements MessageProcessor, Serializable {
 		// Since we don't have save or load working, keep disabled.
 		btnLoad.setEnabled(false);
 		menuBar.add(btnLoad);
+		
+		JButton btnAbout = new JButton("About");
+		btnAbout.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				JOptionPane.showMessageDialog(frame,
+					    "Version: 1.0.0",
+					    "",
+					    JOptionPane.PLAIN_MESSAGE);
+			}
+		});
+		menuBar.add(btnAbout);
 	}
 	
 	private void createSidePane() {
