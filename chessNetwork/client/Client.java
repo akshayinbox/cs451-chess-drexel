@@ -5,6 +5,7 @@ import chessNetwork.messages.EndMessage;
 import chessNetwork.messages.Message;
 import chessNetwork.messages.MessageProcessor;
 import chessNetwork.messages.MoveMessage;
+import chessNetwork.messages.PromotionMessage;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -14,6 +15,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import chessBoard.Move;
+import chessBoard.Promotion;
 
 public class Client implements Serializable {
 	private static final long serialVersionUID = -4556458826512852351L;
@@ -68,6 +70,10 @@ public class Client implements Serializable {
 	//see the above comments on how I imagined this could be used.
 	public void send(Move move) {
 		writer.send(new MoveMessage(move));
+	}
+	
+	public void send(Promotion p) {
+		writer.send(new PromotionMessage(p));
 	}
 	
 	public void sendEnd(String text) {
