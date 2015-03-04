@@ -159,7 +159,6 @@ public class UI implements MessageProcessor, Serializable {
 					
 					try {
 						client = new Client();
-						//boardUI.setClient(client);
 					}
 					catch (IOException e1) {
 						//TODO: couldn't connect to server
@@ -173,7 +172,20 @@ public class UI implements MessageProcessor, Serializable {
 					if (host) {
 						try {
 							int gameID = client.createNewGame();
-							//TODO: if gameID is less than zero, there are too many waiting players
+							if (gameID < 0) {
+								JOptionPane.showMessageDialog(frame,
+										"There are too many waiting players. Try again momentarily.",
+										"",
+										JOptionPane.WARNING_MESSAGE);
+								try {
+									client.close();
+								}
+								catch (Exception e1) {
+									System.out.println("Could not close client.");
+								}
+								return;
+							}
+							
 							JOptionPane.showMessageDialog(frame,
 								    "Your game ID is " + gameID,
 								    "",
@@ -194,11 +206,16 @@ public class UI implements MessageProcessor, Serializable {
 								gameID = Integer.parseInt(connectionPanel.getID());
 							}
 							catch (NumberFormatException e1) {
-								//TODO: tell user he should only use a number as the ID
 								JOptionPane.showMessageDialog(frame,
 									    "Use only an integer.",
 									    "",
 									    JOptionPane.WARNING_MESSAGE);
+								try {
+									client.close();
+								}
+								catch (Exception e2) {
+									System.out.println("Could not close client.");
+								}
 								return;
 							}
 
@@ -216,7 +233,7 @@ public class UI implements MessageProcessor, Serializable {
 									client.close();
 								}
 								catch (Exception e1) {
-									System.out.println("Couldn't close connection.");
+									System.out.println("Could not close client.");
 								}
 								return;
 							}

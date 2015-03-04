@@ -2,8 +2,6 @@ package chessNetwork.client;
 
 import chessNetwork.messages.Message;
 
-
-
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
@@ -45,6 +43,8 @@ public class ClientWriter implements Runnable, Serializable {
 		catch (IOException e) {
 			System.out.println("Caught an IOException writing. Exiting.");
 		}
+
+		System.out.println("Writer exiting.");
 	}
 
 
