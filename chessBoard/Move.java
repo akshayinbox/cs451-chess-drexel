@@ -29,6 +29,8 @@ public class Move implements Serializable {
 	public Move(Coord from, Coord to) {
 		this.fromPos = from;
 		this.toPos = to;
+		this.fromPosTranslated = new Coord(7 - this.fromPos.getRow(), 7 - this.fromPos.getCol());
+		this.toPosTranslated =  new Coord(7 - this.toPos.getRow(), 7 - this.toPos.getCol());
 		this.timeTaken = 0;
 	}
 	
