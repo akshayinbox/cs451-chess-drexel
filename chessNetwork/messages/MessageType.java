@@ -1,7 +1,7 @@
 package chessNetwork.messages;
 
 public enum MessageType {
-	MOVE(0), CHAT(1);
+	MOVE(0), CHAT(1), END(2);
 
 	private int type;
 

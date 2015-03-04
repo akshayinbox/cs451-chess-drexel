@@ -10,6 +10,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -76,7 +79,15 @@ public class UI implements MessageProcessor, Serializable {
 	public UI() throws IOException {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1000, 700);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		WindowListener exitListener = new WindowAdapter() {
+			@Override
+            public void windowClosing(WindowEvent e) {
+				if (initialized)
+					client.sendEnd("Your opponent has exited the game.");
+				System.exit(0);
+            }
+		};
+		frame.addWindowListener(exitListener);
 		createMenu();
 		
 		GridBagLayout gridBagLayout = new GridBagLayout();
@@ -242,6 +253,7 @@ public class UI implements MessageProcessor, Serializable {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, "The game has ended", "Resignation", JOptionPane.OK_OPTION, null);
 				boardUI.clearAllPieces();
+				client.sendEnd("Your opponent has resigned.");
 				System.exit(0);
 			}
 		});
@@ -590,8 +602,19 @@ public class UI implements MessageProcessor, Serializable {
 		public void actionPerformed(ActionEvent e) {
 			if (boardUI.getCanMove()) {
 				if (thisSec == 0) {
-					thisMin--;
-					thisSec = 59;	
+					// Todo: finish game and send information to opponent
+					if (thisMin == 0) {
+						thisTimer.stop();
+						boardUI.setCanMove(false);
+						client.sendEnd("Your opponent has run out of time. You Win!");
+						JOptionPane.showMessageDialog(frame,
+							    "No time remaining. You lose.",
+							    "",
+							    JOptionPane.WARNING_MESSAGE);
+					} else {
+						thisMin--;
+						thisSec = 59;
+					}
 				}
 				else {
 					thisSec--;
@@ -614,8 +637,7 @@ public class UI implements MessageProcessor, Serializable {
 			String currentLog = chatTextArea.getText();
 			currentLog = (currentLog.equals("")) ? currentLog + "Opponent: " + messageText : currentLog + '\n' + "Opponent: " + messageText;
 			chatTextArea.setText(currentLog);
-		}
-		else if (message.getType() == MessageType.MOVE) {
+		} else if (message.getType() == MessageType.MOVE) {
 			Move m = (Move) message.getContent();
 			System.out.println("applying move to UI...");
 			boardUI.receiveMove(m);
@@ -635,12 +657,14 @@ public class UI implements MessageProcessor, Serializable {
 				text = "You are in check.";
 				GameStatus gameOver = chessBoard.gameOver();
 				if (gameOver == GameStatus.CHECKMATE) {
-					text = "Checkmate!";
+					text = "Checkmate! You lose.";
 					boardUI.setCanMove(false);
+					client.sendEnd("Checkmate! You Win!");
 				}
 				else if (gameOver == GameStatus.STALEMATE) {
 					text = "Stalemate!";
 					boardUI.setCanMove(false);
+					client.sendEnd("Stalemate!");
 				}
 				type = JOptionPane.WARNING_MESSAGE;
 			}
@@ -648,6 +672,12 @@ public class UI implements MessageProcessor, Serializable {
 				    text,
 				    "",
 				    type);
+		} else if (message.getType() == MessageType.END) {
+			String text = (String) message.getContent();
+			JOptionPane.showMessageDialog(frame,
+				    text,
+				    "",
+				    JOptionPane.WARNING_MESSAGE);
 		}
 		System.out.println(message.getContent());
 	}

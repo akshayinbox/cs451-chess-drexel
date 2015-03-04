@@ -1,6 +1,7 @@
 package chessNetwork.client;
 
 import chessNetwork.messages.ChatMessage;
+import chessNetwork.messages.EndMessage;
 import chessNetwork.messages.Message;
 import chessNetwork.messages.MessageProcessor;
 import chessNetwork.messages.MoveMessage;
@@ -67,6 +68,10 @@ public class Client implements Serializable {
 	//see the above comments on how I imagined this could be used.
 	public void send(Move move) {
 		writer.send(new MoveMessage(move));
+	}
+	
+	public void sendEnd(String text) {
+		writer.send(new EndMessage(text));
 	}
 
 	public int createNewGame() throws IOException {
