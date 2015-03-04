@@ -29,10 +29,10 @@ public class Client implements Serializable {
 	private Socket socket;
 	private ObjectInputStream socketIn;
 	private ObjectOutputStream socketOut;
-	private ClientReader reader;
-	private ClientWriter writer;
-	private Thread readerThread;
-	private Thread writerThread;
+	private ClientReader reader = null;
+	private ClientWriter writer = null;
+	private Thread readerThread = null;
+	private Thread writerThread = null;
 
 	public Client() throws IOException {
 		for (int i = 0; i < URLs.length; i++) {
@@ -102,9 +102,16 @@ public class Client implements Serializable {
 	}
 
 	public void close() throws IOException, InterruptedException {
-		writer.exit();
+		if (writer != null)
+		{
+			writer.exit();
+		}
+		
 		socket.close();
-		readerThread.join();
-		writerThread.join();
+		if (readerThread != null && writerThread != null)
+		{
+			readerThread.join();
+			writerThread.join();
+		}
 	}
 }

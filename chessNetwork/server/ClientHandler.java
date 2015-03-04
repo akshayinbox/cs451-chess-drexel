@@ -72,7 +72,6 @@ public class ClientHandler implements Runnable, Serializable {
 					System.out.println("Game doesn't exist.");
 					socketOut.writeInt(-1);
 					socketOut.flush();
-					socketIn.readInt();
 					clientSocket.close();
 					System.out.println("Exiting.");
 					return;

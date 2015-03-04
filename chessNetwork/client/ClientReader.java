@@ -42,5 +42,7 @@ public class ClientReader implements Runnable, Serializable {
 		catch (IOException e) {
 			System.out.println("Caught an Exception reading. Exiting.");
 		}
+
+		System.out.println("Reader exiting.");
 	}
 }
