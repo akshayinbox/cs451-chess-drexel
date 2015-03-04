@@ -35,6 +35,7 @@ import chessBoard.GameStatus;
 import chessBoard.Move;
 import chessBoard.Player;
 import chessBoard.Position;
+import chessBoard.Promotion;
 import chessPieces.Bishop;
 import chessPieces.ChessPiece;
 import chessPieces.King;
@@ -184,7 +185,7 @@ public class ChessboardUI extends JPanel implements Serializable {
 		board.repaint();
 	}
 	
-	public void addAllPieces(Boolean host, final Client client) throws IOException {
+	public void addAllPieces(final Boolean host, final Client client) throws IOException {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
 				JPanel temp = new JPanel();
@@ -201,8 +202,45 @@ public class ChessboardUI extends JPanel implements Serializable {
 									if (windowUI.getThisTimer() != null)
 										windowUI.getThisTimer().stop();
 									updateBoard();
+									if (result.equals(Code.PROMOTION)) {
+										PromotionPanel promotionPanel = null;
+										PieceUI newPiece = new PieceUI();
+										try {
+											promotionPanel = new PromotionPanel(host);
+										} catch (IOException e1) {
+											// TODO Auto-generated catch block
+											e1.printStackTrace();
+										}
+										int promotionOk = JOptionPane.showConfirmDialog(null, promotionPanel,
+								        		"Connect", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE);
+										if (promotionOk == JOptionPane.OK_OPTION) {
+											newPiece = promotionPanel.getSelected();
+										} else {
+											// If the user decides to ignore this choice, give them knight as punishment.
+											newPiece.setPlayer(Player.PLAYER1);
+											newPiece.setPiece(new Knight(Player.PLAYER1));
+										}
+										newPiece.setBorder(BorderFactory.createEmptyBorder());
+										newPiece.setContentAreaFilled(false);
+										// Change the pawn with the new promoted piece
+										int col = m.getTo().getCol();
+										int row = m.getTo().getRow();
+										
+										chessBoard.getBoard()[row][col].clearPiece();
+										chessBoard.getBoard()[row][col].addPiece(newPiece.getPiece());
+										
+										int toCompIndex = getComponentIndex(row, col);
+										// Panel where pawn currently is
+										JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+										newComp.removeAll();
+										newComp.add(newPiece);
+										board.updateUI();
+										
+										Promotion p = new Promotion(m, newPiece);
+										client.send(p);
+									} else
 									//uiApplyMove(e);
-									client.send(m);
+										client.send(m);
 									PieceUI piece = (PieceUI)e.getSource();
 									String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
 									windowUI.addToMoveList("You: " + pieceName + " " + boardRep[m.getFrom().getRow()][m.getFrom().getCol()] + " to " + boardRep[m.getTo().getRow()][m.getTo().getCol()]);
@@ -305,6 +343,26 @@ public class ChessboardUI extends JPanel implements Serializable {
 		canMove = true;
 	}
 
+	public void receivePromotion(Promotion p) {
+		Move m = p.getMove();
+		PieceUI newPiece = p.getPiece();
+		
+		int col = m.getToTranslated().getCol();
+		int row = m.getToTranslated().getRow();
+		
+		chessBoard.getBoard()[row][col].clearPiece();
+		chessBoard.getBoard()[row][col].addPiece(newPiece.getPiece());
+		
+		int toCompIndex = getComponentIndex(row, col);
+		// Panel where pawn currently is
+		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+		newComp.removeAll();
+		newComp.add(newPiece);
+		board.updateUI();
+		windowUI.addToMoveList("Opp: Pawn promoted to " + newPiece.getClass().getName().replace("chessPieces.", "") + " - " + boardRep[row][col]);
+		canMove = true;
+	}
+	
 	private String setSquareRep(int row, int col) {
 		row += 1;
 		char letter = (char) (col + 65);

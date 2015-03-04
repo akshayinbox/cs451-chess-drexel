@@ -45,10 +45,12 @@ import chessBoard.ChessBoard;
 import chessBoard.GameStatus;
 import chessBoard.Move;
 import chessBoard.Player;
+import chessBoard.Promotion;
 import chessNetwork.client.Client;
 import chessNetwork.messages.Message;
 import chessNetwork.messages.MessageProcessor;
 import chessNetwork.messages.MessageType;
+import chessPieces.ChessPiece;
 
 public class UI implements MessageProcessor, Serializable {
 	private static final long serialVersionUID = -6155870626478086508L;
@@ -684,6 +686,9 @@ public class UI implements MessageProcessor, Serializable {
 				    text,
 				    "",
 				    type);
+		} else if (message.getType() == MessageType.PROMOTION) {
+			Promotion p = (Promotion) message.getContent();
+			boardUI.receivePromotion(p);
 		} else if (message.getType() == MessageType.END) {
 			String text = (String) message.getContent();
 			JOptionPane.showMessageDialog(frame,
