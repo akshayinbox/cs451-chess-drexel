@@ -76,7 +76,7 @@ public class ChessboardUI extends JPanel implements Serializable {
 			}
 		}
 	}
-	
+
 	public ChessBoard getChessBoard() {
 		return this.chessBoard;
 	}
@@ -88,12 +88,10 @@ public class ChessboardUI extends JPanel implements Serializable {
 	public void repaintBoard() {
 		for( Component p : board.getComponents()) {
 			((JPanel) p).updateUI();
-			//**TESTING/DEBUGGING CODE BELOW ****//
 			for(Component piece : ((JPanel) p).getComponents()) {
 				piece.repaint();
 				System.out.println(((PieceUI) piece).getPlayer().toString() + " " + ((PieceUI) piece).getPiece().toString());
 			}
-			//***TESTING/DEBUGGING CODE ABOVE****//
 			
 			
 		}
@@ -116,6 +114,11 @@ public class ChessboardUI extends JPanel implements Serializable {
 	public void setOpTimeLeft(int secLeft) {
 		this.opSecLeft = secLeft;
 	}
+	
+	public int getOpTimeLeft() {
+		return this.opSecLeft;
+	}
+	
 	
 	/**
 	 * After a move has been applied, fixes the UI of the board to match the
@@ -551,5 +554,9 @@ public class ChessboardUI extends JPanel implements Serializable {
 		button.setPlayer(playerCode);
 		button.setPiece(new King(playerCode));
 		return button;
+	}
+
+	public UI getWindowUI() {
+		return this.windowUI;
 	}
 }
