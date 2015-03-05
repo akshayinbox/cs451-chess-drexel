@@ -205,7 +205,6 @@ public class KingTest {
 		
 	}
 	
-	
 	@Test
 	public void testKingPlayer() {
 		assertTrue(king.getPlayer() == Player.PLAYER1);

@@ -173,14 +173,7 @@ public class ChessBoard  implements Serializable {
 	public Code validateAndApply(Move move) {
 		
 		Coord from = move.getFrom();
-		Coord to = move.getTo();
-		
 		Position fromPosition = board[from.getRow()][from.getCol()];
-		Position toPosition = board[to.getRow()][to.getCol()];
-		
-		//can't move on top of your own piece
-		if (!toPosition.isEmpty() && toPosition.getPiece().getPlayer() == Player.PLAYER1) 
-			return Code.NOT_LEGAL;
 		
 		//can't move enemy piece
 		if (!fromPosition.isEmpty() && fromPosition.getPiece().getPlayer() == Player.PLAYER2) 
