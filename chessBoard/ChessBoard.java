@@ -343,6 +343,10 @@ public class ChessBoard  implements Serializable {
 			board[row][c].clearPiece();
 	}
 	
+	public void removePiece(Coord coord) {
+		board[coord.getRow()][coord.getCol()].clearPiece();
+	}
+	
 	/* Clear board except for particular position */
 	public void clearBoardExcept(Coord coord) {
 		for (int r = 0; r < 8; r++) {

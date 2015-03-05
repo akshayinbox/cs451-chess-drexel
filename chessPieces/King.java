@@ -102,7 +102,7 @@ public class King extends ChessPiece {
 			}
 			
 			//check right rook
-			if (board[7][0].isOwnType(PieceID.ROOK)) {
+			if (board[7][7].isOwnType(PieceID.ROOK)) {
 				
 				boolean rightSideEmpty = true;
 				for (int i = col+1; i < 7; i++) 
