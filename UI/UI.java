@@ -168,10 +168,27 @@ public class UI implements MessageProcessor, Serializable {
 							    JOptionPane.WARNING_MESSAGE);
 						return;
 					}
-					
+				
+					int timerVal = Integer.MAX_VALUE;
 					if (host) {
 						try {
-							int gameID = client.createNewGame();
+							if (!timeLimit.equals("No Limit")) {
+								try {
+									timerVal = Integer.parseInt(timeLimit.split(" ")[0]);
+								}
+								catch (NumberFormatException e1) {
+									System.out.println("This error should not happen. Congrats!");
+									try {
+										client.close();
+									}
+									catch (Exception e2) {
+										System.out.println("Could not close client.");
+									}
+									return;
+								}
+							}
+							
+							int gameID = client.createNewGameWithTime(timerVal);
 							if (gameID < 0) {
 								JOptionPane.showMessageDialog(frame,
 										"There are too many waiting players. Try again momentarily.",
@@ -219,7 +236,8 @@ public class UI implements MessageProcessor, Serializable {
 								return;
 							}
 
-							if (client.joinExistingGame(gameID))
+							timerVal = client.joinExistingGame(gameID);
+							if (timerVal >= 0)
 							{
 								client.readWrite(that);
 							}
@@ -253,10 +271,10 @@ public class UI implements MessageProcessor, Serializable {
 					boardUI.getChessBoard().initializeBoard();
 					changeMenuButtons();
 					initialized = true;
-					if (!timeLimit.equals("No Limit")) {
+					if (timerVal != Integer.MAX_VALUE) {
 						thisTimer = new Timer(1000, new TimeListener());
-						setTimers(true, Integer.parseInt(timeLimit.split(" ")[0]), 0);
-						setTimers(false, Integer.parseInt(timeLimit.split(" ")[0]), 0);
+						setTimers(true, timerVal, 0);
+						setTimers(false, timerVal, 0);
 					}
 				}
 			}

@@ -80,8 +80,8 @@ public class Client implements Serializable {
 		writer.send(new EndMessage(text));
 	}
 
-	public int createNewGame() throws IOException {
-		socketOut.writeInt(-1);
+	public int createNewGameWithTime(int time) throws IOException {
+		socketOut.writeInt(-time);
 		socketOut.flush();
 		return socketIn.readInt();
 	}
@@ -91,11 +91,11 @@ public class Client implements Serializable {
 		return socketIn.readInt();
 	}
 
-	public boolean joinExistingGame(int gameID) throws IOException {
+	public int joinExistingGame(int gameID) throws IOException {
 		socketOut.writeInt(gameID);
 		socketOut.flush();
 		System.out.println("Waiting for an integer (guest)...");
-		return socketIn.readInt() >= 0;
+		return socketIn.readInt();
 	}
 
 	public void readWrite(MessageProcessor processor) {

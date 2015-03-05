@@ -24,6 +24,7 @@ public class ClientHandler implements Runnable, Serializable {
 	private ObjectOutputStream peerOut;
 	private ClientHandler peer;
 	private Semaphore peerSemaphore = new Semaphore(0);
+	int initialTime;
 
 	public static void establishIDs() {
 		for (int i = 0; i <= MAX_WAITING; i++) {
@@ -52,6 +53,8 @@ public class ClientHandler implements Runnable, Serializable {
 
 		try {
 			if (gameID < 0) {
+				//treat the "gameID" as the time limit and try to establish the new game
+				initialTime = -gameID;
 				if (!establishNewGame()) {
 					socketOut.writeInt(-1);
 					socketOut.flush();
@@ -63,7 +66,7 @@ public class ClientHandler implements Runnable, Serializable {
 			else {
 				if (joinExistingGame(gameID)) {
 					//indicate that the connection was successful to the client
-					socketOut.writeInt(0);
+					socketOut.writeInt(initialTime);
 					socketOut.flush();
 					//allow the peer thread to continue
 					peer.peerSemaphore.release();
@@ -95,7 +98,7 @@ public class ClientHandler implements Runnable, Serializable {
 			return;
 		}
 		catch (IOException e) {
-			System.out.println("Error: couldn't read or write to or from socket.");
+			System.out.println("Error: couldn't read from or write to socket.");
 			return;
 		}
 
@@ -132,9 +135,13 @@ public class ClientHandler implements Runnable, Serializable {
 		if (peer == null) {
 			return false;
 		}
+
 		waitingClients.remove(gameID);
 		ids.add(gameID);
 
+		//set the initial time to the peer's initial time
+		initialTime = peer.initialTime;
+		
 		//set the peer's output socket to...the peer's output socket
 		peerOut = peer.socketOut;
 
