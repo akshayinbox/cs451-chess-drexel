@@ -672,40 +672,12 @@ public class UI implements MessageProcessor, Serializable {
 			Move m = (Move) message.getContent();
 			System.out.println("applying move to UI...");
 			boardUI.receiveMove(m);
-			int totalSecTaken = m.getTimeTaken();
-			int totalOpTime = (60 * opMin) + opSec;
-			int minLeft = (totalOpTime - totalSecTaken) / 60;
-			int secLeft = (totalOpTime - totalSecTaken) % 60;
-			
-			if (totalOpTime - totalSecTaken > 0) {
-				setTimers(false, minLeft, secLeft);
-				boardUI.setOpTimeLeft(totalOpTime - totalSecTaken);
-			}
-			String text = "Your move.";
-			int type = JOptionPane.PLAIN_MESSAGE;
-			ChessBoard chessBoard = boardUI.getChessBoard();
-			if (chessBoard.kingInCheck()) {
-				text = "You are in check.";
-				GameStatus gameOver = chessBoard.gameOver();
-				if (gameOver == GameStatus.CHECKMATE) {
-					text = "Checkmate! You lose.";
-					boardUI.setCanMove(false);
-					client.sendEnd("Checkmate! You Win!");
-				}
-				else if (gameOver == GameStatus.STALEMATE) {
-					text = "Stalemate!";
-					boardUI.setCanMove(false);
-					client.sendEnd("Stalemate!");
-				}
-				type = JOptionPane.WARNING_MESSAGE;
-			}
-			JOptionPane.showMessageDialog(frame,
-				    text,
-				    "",
-				    type);
+			finishProcess(m);
 		} else if (message.getType() == MessageType.PROMOTION) {
 			Promotion p = (Promotion) message.getContent();
+			System.out.println("applying move to UI...");
 			boardUI.receivePromotion(p);
+			finishProcess(p.getMove());
 		} else if (message.getType() == MessageType.END) {
 			String text = (String) message.getContent();
 			JOptionPane.showMessageDialog(frame,
@@ -714,5 +686,39 @@ public class UI implements MessageProcessor, Serializable {
 				    JOptionPane.WARNING_MESSAGE);
 		}
 		System.out.println(message.getContent());
+	}
+	
+	public void finishProcess(Move m) {
+		int totalSecTaken = m.getTimeTaken();
+		int totalOpTime = (60 * opMin) + opSec;
+		int minLeft = (totalOpTime - totalSecTaken) / 60;
+		int secLeft = (totalOpTime - totalSecTaken) % 60;
+		
+		if (totalOpTime - totalSecTaken > 0) {
+			setTimers(false, minLeft, secLeft);
+			boardUI.setOpTimeLeft(totalOpTime - totalSecTaken);
+		}
+		String text = "Your move.";
+		int type = JOptionPane.PLAIN_MESSAGE;
+		ChessBoard chessBoard = boardUI.getChessBoard();
+		if (chessBoard.kingInCheck()) {
+			text = "You are in check.";
+			GameStatus gameOver = chessBoard.gameOver();
+			if (gameOver == GameStatus.CHECKMATE) {
+				text = "Checkmate! You lose.";
+				boardUI.setCanMove(false);
+				client.sendEnd("Checkmate! You Win!");
+			}
+			else if (gameOver == GameStatus.STALEMATE) {
+				text = "Stalemate!";
+				boardUI.setCanMove(false);
+				client.sendEnd("Stalemate!");
+			}
+			type = JOptionPane.WARNING_MESSAGE;
+		}
+		JOptionPane.showMessageDialog(frame,
+			    text,
+			    "",
+			    type);
 	}
 }

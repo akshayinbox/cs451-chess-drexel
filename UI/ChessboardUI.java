@@ -344,6 +344,8 @@ public class ChessboardUI extends JPanel implements Serializable {
 	}
 
 	public void receivePromotion(Promotion p) {
+		System.out.println("After receiving move: ");
+		System.out.println(chessBoard);
 		Move m = p.getMove();
 		PieceUI newPiece = p.getPiece();
 		
