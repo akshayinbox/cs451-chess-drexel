@@ -1,11 +1,13 @@
-package chessPieces;
+package Tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import chessBoard.Player;
+import chessPieces.ChessPiece;
+import chessPieces.Rook;
 
 public class ChessPieceTest {
 

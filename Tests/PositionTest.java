@@ -1,11 +1,16 @@
-package chessBoard;
+package Tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import chessPieces.*;
+import chessBoard.Player;
+import chessBoard.Position;
+import chessPieces.ChessPiece;
+import chessPieces.King;
+import chessPieces.PieceID;
+import chessPieces.Rook;
 
 public class PositionTest {
 	

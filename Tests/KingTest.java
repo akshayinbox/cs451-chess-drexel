@@ -1,6 +1,7 @@
-package chessPieces;
+package Tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 
@@ -8,10 +9,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import chessBoard.ChessBoard;
-import chessBoard.Code;
 import chessBoard.Coord;
 import chessBoard.Move;
 import chessBoard.Player;
+import chessPieces.King;
+import chessPieces.PieceID;
 
 public class KingTest {
 

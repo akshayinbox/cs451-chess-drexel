@@ -1,12 +1,17 @@
-package chessBoard;
+package Tests;
 
-import static org.junit.Assert.*;
-
-import java.util.ArrayList;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 
+import chessBoard.ChessBoard;
+import chessBoard.Code;
+import chessBoard.Coord;
+import chessBoard.GameStatus;
+import chessBoard.Move;
+import chessBoard.Player;
 import chessPieces.Queen;
 
 public class ChessBoardTest {

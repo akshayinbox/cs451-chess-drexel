@@ -1,6 +1,6 @@
-package UI;
+package Tests;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.awt.Color;
 import java.io.IOException;
@@ -10,6 +10,8 @@ import javax.swing.JPanel;
 import org.junit.Before;
 import org.junit.Test;
 
+import UI.ChessboardUI;
+import UI.UI;
 import chessBoard.ChessBoard;
 import chessBoard.Coord;
 import chessBoard.Move;
