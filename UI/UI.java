@@ -78,9 +78,13 @@ public class UI implements MessageProcessor, Serializable {
 	
 	private boolean initialized = false;
 	
+	/**
+	 * Create the UI for a chess game.
+	 */
 	public UI() throws IOException {
 		frame = new JFrame();
 		frame.setBounds(100, 100, 1000, 700);
+		// Custom exit handler to alert opponent when user exits.
 		WindowListener exitListener = new WindowAdapter() {
 			@Override
             public void windowClosing(WindowEvent e) {
@@ -133,18 +137,26 @@ public class UI implements MessageProcessor, Serializable {
 		this.thisSecLeft = time;
 	}
 	
+	/**
+	 * Add a move to the move list.
+	 * @param move The string representation of a move.
+	 */
 	public void addToMoveList(String move) {
 		String currentLog = moveTextArea.getText();
 		currentLog = (currentLog.equals("")) ? currentLog + move : currentLog + '\n' + move; 
 		moveTextArea.setText(currentLog);
 	}
 	
+	/**
+	 * Create the window's menu bar
+	 */
 	private void createMenu() {
 		menuBar.setMargin(new Insets(5, 5, 5, 5));
 		frame.setJMenuBar(menuBar);
 		
 		final UI that = this;
 		JButton btnConnect = new JButton("Connect");
+		// On click, show the connect screen.
 		btnConnect.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -295,6 +307,7 @@ public class UI implements MessageProcessor, Serializable {
 		menuBar.add(btnResign);
 		
 		JButton btnSave = new JButton("Save");
+		// Future release possibility.
 		btnSave.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -345,6 +358,7 @@ public class UI implements MessageProcessor, Serializable {
 		menuBar.add(btnSave);
 		
 		JButton btnLoad = new JButton("Load");
+		// Future release possibility.
 		btnLoad.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -429,6 +443,9 @@ public class UI implements MessageProcessor, Serializable {
 		menuBar.add(btnAbout);
 	}
 	
+	/**
+	 * Create the side panel, containing the move list, timers, and chat
+	 */
 	private void createSidePane() {
 		JPanel sideMenuBorder = new JPanel();
 		sideMenuBorder.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -464,6 +481,10 @@ public class UI implements MessageProcessor, Serializable {
 		createChatPane(sideMenuPane);
 	}
 	
+	/**
+	 * Create the move list pane.
+	 * @param sideMenuPane The panel to attach the move list to.
+	 */
 	private void createMovePane(JPanel sideMenuPane) {
 		JPanel moveBorder = new JPanel();
 		moveBorder.setBorder(new TitledBorder(null, "Move List", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -495,6 +516,10 @@ public class UI implements MessageProcessor, Serializable {
 		moveBorder.add(moveScrollPane, gbc_moveScrollPane);
 	}
 	
+	/**
+	 * Create the timer pane.
+	 * @param sideMenuPane The panel to attach the timer pane to.
+	 */
 	private void createTimerPane(JPanel sideMenuPane) {
 		JPanel timerBorder = new JPanel();
 		timerBorder.setBorder(new TitledBorder(null, "Timer", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -526,6 +551,10 @@ public class UI implements MessageProcessor, Serializable {
 		blackTimePane.add(opCountdown, BorderLayout.CENTER);
 	}
 	
+	/**
+	 * Create the chat pane.
+	 * @param sideMenuPane The panel to attach the chat pane to.
+	 */
 	private void createChatPane(JPanel sideMenuPane) {
 		JPanel chatBorder = new JPanel();
 		chatBorder.setBorder(new TitledBorder(null, "Chat", TitledBorder.LEADING, TitledBorder.TOP, null, null));
@@ -585,6 +614,9 @@ public class UI implements MessageProcessor, Serializable {
 		chatBorder.add(chatSendBtn, gbc_chatSendBtn);
 	}
 	
+	/**
+	 * Create the panel which houses the game board.
+	 */
 	private void createBoardPane() throws IOException {
 		JPanel boardBorder = new JPanel();
 		boardBorder.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -607,6 +639,9 @@ public class UI implements MessageProcessor, Serializable {
 		boardBorder.add(boardPane);
 	}
 	
+	/**
+	 * Toggle the menu buttons based on state of game.
+	 */
 	private void changeMenuButtons() {
 		JButton connect = (JButton)menuBar.getComponent(0);
 		JButton resign = (JButton)menuBar.getComponent(2);
@@ -619,6 +654,12 @@ public class UI implements MessageProcessor, Serializable {
 		load.setEnabled(false);
 	}
 	
+	/**
+	 * Set the timer values to display to users.
+	 * @param isMe Determine to update own time or opponent's.
+	 * @param min The minutes remaining
+	 * @param sec The seconds remaining
+	 */
 	private void setTimers(Boolean isMe, int min, int sec) {
 		if (isMe) {
 			thisMin = min;
@@ -643,12 +684,14 @@ public class UI implements MessageProcessor, Serializable {
 		thisTimer.start();
 	}
 	
+	/**
+	 * The timer to be run every second
+	 */
 	private class TimeListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			if (boardUI.getCanMove()) {
 				if (thisSec == 0) {
-					// Todo: finish game and send information to opponent
 					if (thisMin == 0) {
 						thisTimer.stop();
 						boardUI.setCanMove(false);
@@ -675,9 +718,12 @@ public class UI implements MessageProcessor, Serializable {
 		}
 	}
 
+	/**
+	 * Handle a message when it comes from the server.
+	 * @param message The message from the server.
+	 */
 	@Override
 	public void process(Message message) {
-		//TODO: make these do what they're actually supposed to
 		if (message.getType() == MessageType.CHAT) {
 			String messageText = (String) message.getContent();
 			String currentLog = chatTextArea.getText();
@@ -703,7 +749,11 @@ public class UI implements MessageProcessor, Serializable {
 		System.out.println(message.getContent());
 	}
 	
-	public void finishProcess(Move m) {
+	/**
+	 * Change timers, tell user messages when relevant.
+	 * @param m The move that was made by the opponent.
+	 */
+	private void finishProcess(Move m) {
 		int totalSecTaken = m.getTimeTaken();
 		int totalOpTime = (60 * opMin) + opSec;
 		int minLeft = (totalOpTime - totalSecTaken) / 60;

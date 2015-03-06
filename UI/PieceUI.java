@@ -14,20 +14,11 @@ public class PieceUI extends JButton{
 	private Player playerCode;
 	private ChessPiece piece;
 	
+	/**
+	 * New representation for a chess piece.
+	 */
 	public PieceUI() {
 		enableInputMethods(true);
-		this.addMouseMotionListener(new MouseMotionAdapter() {
-			@Override
-			public void mouseDragged(MouseEvent e) {
-//				System.out.println(getPlayer());
-			}
-		});
-//		this.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseReleased(MouseEvent e) {
-//				System.out.println(e);
-//			}
-//		});
 	}
 	
 	public Player getPlayer() {

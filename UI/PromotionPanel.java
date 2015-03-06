@@ -27,6 +27,9 @@ public class PromotionPanel extends JPanel implements Serializable {
 
 	private PieceUI selected = null;
 	
+	/**
+	 * Create the promotion panel.
+	 */
 	public PromotionPanel (Boolean host) throws IOException {
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
 		
