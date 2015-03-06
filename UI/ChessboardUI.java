@@ -206,80 +206,7 @@ public class ChessboardUI extends JPanel implements Serializable {
 				JPanel temp = new JPanel();
 				PieceUI b = new PieceUI();
 				// Add a drag listener on each piece
-				b.addMouseListener(new MouseAdapter() {
-					@Override
-					public void mouseReleased(MouseEvent e) {
-						if (canMove) {
-							// Create the move based on the dragging motion
-							Move m = createMove(e);
-							if (m != null) {
-								System.out.println(m);
-								// Try and perform the move
-								Code result = chessBoard.validateAndApply(m);
-								if (result.getCode() > 0) {
-									if (windowUI.getThisTimer() != null)
-										windowUI.getThisTimer().stop();
-									updateBoard();
-									// Promotions are a special type of move. Handle differently.
-									if (result.equals(Code.PROMOTION)) {
-										PromotionPanel promotionPanel = null;
-										PieceUI newPiece = new PieceUI();
-										try {
-											promotionPanel = new PromotionPanel(host);
-										} catch (IOException e1) {
-											// TODO Auto-generated catch block
-											e1.printStackTrace();
-										}
-										int promotionOk = JOptionPane.showConfirmDialog(null, promotionPanel,
-								        		"Connect", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE);
-										if (promotionOk == JOptionPane.OK_OPTION) {
-											newPiece = promotionPanel.getSelected();
-										} else {
-											// If the user decides to ignore this choice, give them knight as punishment.
-											newPiece.setPlayer(Player.PLAYER1);
-											newPiece.setPiece(new Knight(Player.PLAYER1));
-										}
-										newPiece.setBorder(BorderFactory.createEmptyBorder());
-										newPiece.setContentAreaFilled(false);
-										// Change the pawn with the new promoted piece
-										int col = m.getTo().getCol();
-										int row = m.getTo().getRow();
-										
-										chessBoard.getBoard()[row][col].clearPiece();
-										chessBoard.getBoard()[row][col].addPiece(newPiece.getPiece());
-										
-										int toCompIndex = getComponentIndex(row, col);
-										// Panel where pawn currently is
-										JPanel newComp = (JPanel) board.getComponent(toCompIndex);
-										newComp.removeAll();
-										newComp.add(newPiece);
-										board.updateUI();
-										
-										Promotion p = new Promotion(m, newPiece);
-										client.send(p);
-									} else
-										client.send(m);
-									PieceUI piece = (PieceUI)e.getSource();
-									String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
-									windowUI.addToMoveList("You: " + pieceName + " " + boardRep[m.getFrom().getRow()][m.getFrom().getCol()] + " to " + boardRep[m.getTo().getRow()][m.getTo().getCol()]);
-									windowUI.setThisSecLeft(windowUI.getThisSecLeft() - m.getTimeTaken());
-									thisSecLeft = windowUI.getThisSecLeft() - m.getTimeTaken();
-									canMove = false;
-									System.out.println(chessBoard.toString());
-								} else if (result.equals(Code.IN_CHECK))
-									JOptionPane.showMessageDialog(null,
-										    "You cannot move yourself into check.",
-										    "",
-										    JOptionPane.WARNING_MESSAGE);
-								else
-									JOptionPane.showMessageDialog(null,
-										    "Invalid Move",
-										    "",
-										    JOptionPane.WARNING_MESSAGE);
-							}
-						}
-					}
-				});
+				addDragListener(b, host, client);
 				b.setBorder(BorderFactory.createEmptyBorder());
 				b.setContentAreaFilled(false);
 				int compIndex = i * BOARD_COLS + j;
@@ -313,6 +240,84 @@ public class ChessboardUI extends JPanel implements Serializable {
 				temp.updateUI();
 			}
 		}
+	}
+	
+	public void addDragListener(PieceUI b, final Boolean host, final Client client) {
+		b.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				if (canMove) {
+					// Create the move based on the dragging motion
+					Move m = createMove(e);
+					if (m != null) {
+						System.out.println(m);
+						// Try and perform the move
+						Code result = chessBoard.validateAndApply(m);
+						if (result.getCode() > 0) {
+							if (windowUI.getThisTimer() != null)
+								windowUI.getThisTimer().stop();
+							updateBoard();
+							// Promotions are a special type of move. Handle differently.
+							if (result.equals(Code.PROMOTION)) {
+								PromotionPanel promotionPanel = null;
+								PieceUI newPiece = new PieceUI();
+								try {
+									promotionPanel = new PromotionPanel(host);
+								} catch (IOException e1) {
+									// TODO Auto-generated catch block
+									e1.printStackTrace();
+								}
+								int promotionOk = JOptionPane.showConfirmDialog(null, promotionPanel,
+						        		"Connect", JOptionPane.OK_OPTION, JOptionPane.PLAIN_MESSAGE);
+								if (promotionOk == JOptionPane.OK_OPTION) {
+									newPiece = promotionPanel.getSelected();
+								} else {
+									// If the user decides to ignore this choice, give them knight as punishment.
+									newPiece.setPlayer(Player.PLAYER1);
+									newPiece.setPiece(new Knight(Player.PLAYER1));
+								}
+								addDragListener(newPiece, host, client);
+								newPiece.setBorder(BorderFactory.createEmptyBorder());
+								newPiece.setContentAreaFilled(false);
+								// Change the pawn with the new promoted piece
+								int col = m.getTo().getCol();
+								int row = m.getTo().getRow();
+								
+								chessBoard.getBoard()[row][col].clearPiece();
+								chessBoard.getBoard()[row][col].addPiece(newPiece.getPiece());
+								
+								int toCompIndex = getComponentIndex(row, col);
+								// Panel where pawn currently is
+								JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+								newComp.removeAll();
+								newComp.add(newPiece);
+								board.updateUI();
+								
+								Promotion p = new Promotion(m, newPiece);
+								client.send(p);
+							} else
+								client.send(m);
+							PieceUI piece = (PieceUI)e.getSource();
+							String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
+							windowUI.addToMoveList("You: " + pieceName + " " + boardRep[m.getFrom().getRow()][m.getFrom().getCol()] + " to " + boardRep[m.getTo().getRow()][m.getTo().getCol()]);
+							windowUI.setThisSecLeft(windowUI.getThisSecLeft() - m.getTimeTaken());
+							thisSecLeft = windowUI.getThisSecLeft() - m.getTimeTaken();
+							canMove = false;
+							System.out.println(chessBoard.toString());
+						} else if (result.equals(Code.IN_CHECK))
+							JOptionPane.showMessageDialog(null,
+								    "You cannot move yourself into check.",
+								    "",
+								    JOptionPane.WARNING_MESSAGE);
+						else
+							JOptionPane.showMessageDialog(null,
+								    "Invalid Move",
+								    "",
+								    JOptionPane.WARNING_MESSAGE);
+					}
+				}
+			}
+		});
 	}
 	
 	/**
