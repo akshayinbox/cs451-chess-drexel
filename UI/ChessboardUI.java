@@ -363,19 +363,26 @@ public class ChessboardUI extends JPanel implements Serializable {
 		Move m = p.getMove();
 		PieceUI newPiece = p.getPiece();
 		
-		int col = m.getToTranslated().getCol();
-		int row = m.getToTranslated().getRow();
+		int fromCol = m.getFromTranslated().getCol();
+		int fromRow = m.getFromTranslated().getRow();
 		
-		chessBoard.getBoard()[row][col].clearPiece();
-		chessBoard.getBoard()[row][col].addPiece(newPiece.getPiece());
+		int toCol = m.getToTranslated().getCol();
+		int toRow = m.getToTranslated().getRow();
 		
-		int toCompIndex = getComponentIndex(row, col);
+		chessBoard.getBoard()[fromRow][toCol].clearPiece();
+		chessBoard.getBoard()[toRow][toCol].clearPiece();
+		chessBoard.getBoard()[toRow][toCol].addPiece(newPiece.getPiece());
+		
+		int fromCompIndex = getComponentIndex(fromRow, fromCol);
+		int toCompIndex = getComponentIndex(toRow, toCol);
 		// Panel where pawn currently is
+		JPanel oldComp = (JPanel) board.getComponent(fromCompIndex);
 		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
+		oldComp.removeAll();
 		newComp.removeAll();
 		newComp.add(newPiece);
 		board.updateUI();
-		windowUI.addToMoveList("Opp: Pawn promoted to " + newPiece.getClass().getName().replace("chessPieces.", "") + " - " + boardRep[row][col]);
+		windowUI.addToMoveList("Opp: Pawn promoted to " + newPiece.getClass().getName().replace("chessPieces.", "") + " - " + boardRep[toRow][toCol]);
 		canMove = true;
 	}
 	
