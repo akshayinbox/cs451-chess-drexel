@@ -47,6 +47,7 @@ public class ClientHandler implements Runnable, Serializable {
 		}
 		catch (IOException e) {
 			System.out.println("Error: couldn't read from socket.");
+			cleanExit();
 			return;
 		}
 		System.out.println("The received game ID is : " + gameID);
@@ -58,7 +59,7 @@ public class ClientHandler implements Runnable, Serializable {
 				if (!establishNewGame()) {
 					socketOut.writeInt(-1);
 					socketOut.flush();
-					clientSocket.close();
+					cleanExit();
 					System.out.println("Not enough room. Client handler exiting.");
 					return;
 				}
@@ -75,7 +76,7 @@ public class ClientHandler implements Runnable, Serializable {
 					System.out.println("Game doesn't exist.");
 					socketOut.writeInt(-1);
 					socketOut.flush();
-					clientSocket.close();
+					cleanExit();
 					System.out.println("Exiting.");
 					return;
 				}
@@ -83,10 +84,12 @@ public class ClientHandler implements Runnable, Serializable {
 		}
 		catch (InterruptedException e) {
 			System.out.println("Error: thread interrupted.");
+			cleanExit();
 			return;
 		}
 		catch (IOException e) {
 			System.out.println("Error: couldn't write the gameID.");
+			cleanExit();
 			return;
 		}
 
@@ -95,20 +98,17 @@ public class ClientHandler implements Runnable, Serializable {
 		}
 		catch (ClassNotFoundException e) {
 			System.out.println("Error: couldn't find class.");
+			cleanExit();
 			return;
 		}
 		catch (IOException e) {
 			System.out.println("Error: couldn't read from or write to socket.");
+			cleanExit();
 			return;
 		}
 
-		try {
-			clientSocket.close();
-		}
-		catch (IOException e) {
-			System.out.println("Error: couldn't close clientSocket.");
-			return;
-		}
+		
+		cleanExit();
 	}
 
 	private boolean establishNewGame() throws IOException, InterruptedException {
@@ -160,6 +160,16 @@ public class ClientHandler implements Runnable, Serializable {
 			peerOut.writeObject(obj);
 			peerOut.flush();
 			obj = socketIn.readObject();
+		}
+	}
+
+	private void cleanExit() {
+		try {
+			clientSocket.close();
+		}
+		catch (IOException e) {
+			System.out.println("Error: couldn't close clientSocket.");
+			return;
 		}
 	}
 }
