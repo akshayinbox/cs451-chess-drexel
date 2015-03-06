@@ -161,7 +161,6 @@ public class UI implements MessageProcessor, Serializable {
 						client = new Client();
 					}
 					catch (IOException e1) {
-						//TODO: couldn't connect to server
 						JOptionPane.showMessageDialog(frame,
 							    "Couldn't connect.",
 							    "",
@@ -237,12 +236,10 @@ public class UI implements MessageProcessor, Serializable {
 							}
 
 							timerVal = client.joinExistingGame(gameID);
-							if (timerVal >= 0)
-							{
+							if (timerVal >= 0) {
 								client.readWrite(that);
 							}
-							else
-							{
+							else {
 								JOptionPane.showMessageDialog(frame,
 									    "There are no games with that ID.",
 									    "",
