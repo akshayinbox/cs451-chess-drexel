@@ -59,6 +59,11 @@ public class ChessboardUI extends JPanel implements Serializable {
 	private final static int BOARD_COLS = 8;
 	private final static String[][] boardRep = new String[BOARD_ROWS][BOARD_COLS];
 
+	/**
+	 * Creates a UI chessboard
+	 * @param panel The JPanel the chessboard will be attached to.
+	 * @param window The rest of the UI window.
+	 */
 	public ChessboardUI(JPanel panel, UI window) throws IOException {
 		windowUI = window;
 		board = panel;
@@ -70,7 +75,6 @@ public class ChessboardUI extends JPanel implements Serializable {
 				square.setName(Integer.toString(j) + "," + Integer.toString(i));
 				square.setBackground(i%2 == j%2 ? LIGHT_BROWN : DARK_BROWN);
 				square.setBorder(new EmptyBorder(5, 5, 5, 5));
-//				square.setPreferredSize(new Dimension(50, 50));
 				board.add(square);
 				boardRep[i][j] = setSquareRep(i, j);
 			}
@@ -85,6 +89,9 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return this.board;
 	}
 	
+	/**
+	 * Updates every piece on the board.
+	 */
 	public void repaintBoard() {
 		for( Component p : board.getComponents()) {
 			((JPanel) p).updateUI();
@@ -188,23 +195,32 @@ public class ChessboardUI extends JPanel implements Serializable {
 		board.repaint();
 	}
 	
+	/**
+	 * Adds all of the initial board pieces and attaches handlers to each piece
+	 * @param host Whether or not the current UI is the game's host.
+	 * @param client A network client.
+	 */
 	public void addAllPieces(final Boolean host, final Client client) throws IOException {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
 				JPanel temp = new JPanel();
 				PieceUI b = new PieceUI();
+				// Add a drag listener on each piece
 				b.addMouseListener(new MouseAdapter() {
 					@Override
 					public void mouseReleased(MouseEvent e) {
 						if (canMove) {
+							// Create the move based on the dragging motion
 							Move m = createMove(e);
 							if (m != null) {
 								System.out.println(m);
+								// Try and perform the move
 								Code result = chessBoard.validateAndApply(m);
 								if (result.getCode() > 0) {
 									if (windowUI.getThisTimer() != null)
 										windowUI.getThisTimer().stop();
 									updateBoard();
+									// Promotions are a special type of move. Handle differently.
 									if (result.equals(Code.PROMOTION)) {
 										PromotionPanel promotionPanel = null;
 										PieceUI newPiece = new PieceUI();
@@ -242,7 +258,6 @@ public class ChessboardUI extends JPanel implements Serializable {
 										Promotion p = new Promotion(m, newPiece);
 										client.send(p);
 									} else
-									//uiApplyMove(e);
 										client.send(m);
 									PieceUI piece = (PieceUI)e.getSource();
 									String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
@@ -267,23 +282,17 @@ public class ChessboardUI extends JPanel implements Serializable {
 				});
 				b.setBorder(BorderFactory.createEmptyBorder());
 				b.setContentAreaFilled(false);
-//				System.out.println(i + "," + j);
-				//int compIndex = 0;
-//				if (host)
-					int compIndex = i * BOARD_COLS + j;
-					
-					if(!host) {
-						if (j == 3)
-							compIndex = compIndex + 1;
-						else if (j == 4)
-							compIndex = compIndex - 1;
-					}
-//				else
-//					compIndex = (BOARD_COLS*BOARD_ROWS - 1) - (i * BOARD_COLS + j);
+				int compIndex = i * BOARD_COLS + j;
+				
+				if(!host) {
+					if (j == 3)
+						compIndex = compIndex + 1;
+					else if (j == 4)
+						compIndex = compIndex - 1;
+				}
 				switch(i) {
 					case 0:
 					case 7: {
-						//PROBLEM: player who joins has his pieces labled as PLAYER2
 						switch(j) {
 						case 0:
 						case 7: {b = addRook(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
@@ -300,16 +309,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 					case 6: {b = addPawn(b, i, host); temp = (JPanel)board.getComponent(compIndex); break;}
 					
 				}
-//				System.out.println(temp);
 				temp.add(b);
 				temp.updateUI();
-//				board.add(square);
 			}
 		}
-//		boardPane.add(board);
-//		board.updateUI();
 	}
 	
+	/**
+	 * Clears all the pieces on the board.
+	 */
 	public void clearAllPieces() {
 		for (int i = 0; i < BOARD_ROWS; i++) {
 			for (int j = 0; j < BOARD_COLS; j++) {
@@ -321,23 +329,22 @@ public class ChessboardUI extends JPanel implements Serializable {
 		board.updateUI();
 	}
 
+	/**
+	 * Receive a move from the opponent.
+	 * @param m The opponent's move.
+	 */
 	public void receiveMove(Move m) {
 		//apply the move to the actual model of the chess board
 		chessBoard.receiveMove(m);
 		System.out.println("After receiving move: ");
 		System.out.println(chessBoard);
 
-//		//then apply it to the UI
+		//then apply it to the UI
 		Coord from = m.getFromTranslated();
 		Coord to = m.getToTranslated();
 		int fromCompIndex = getComponentIndex(from.getRow(), from.getCol());
-		int toCompIndex = getComponentIndex(to.getRow(), to.getCol());
 		//get the piece component
 		Component oldComp = ((JPanel) board.getComponent(fromCompIndex)).getComponents()[0];
-		//get the new square onto which the peice will be palced
-		JPanel newComp = (JPanel) board.getComponent(toCompIndex);
-		//then finally move the piece
-		//movePiece(oldComp, newComp);
 
 		PieceUI piece = (PieceUI)oldComp;
 		String pieceName = piece.getPiece().getClass().getName().replace("chessPieces.", "");
@@ -346,6 +353,10 @@ public class ChessboardUI extends JPanel implements Serializable {
 		canMove = true;
 	}
 
+	/**
+	 * Receive a promotion message from the client.
+	 * @param p The opponent's promotion.
+	 */
 	public void receivePromotion(Promotion p) {
 		System.out.println("After receiving move: ");
 		System.out.println(chessBoard);
