@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 
+/**
+  * A reader for a Client type object, constantly reading from the server and passing receieved
+  * Messages off to some other object which implements the MessageProcessor interface when run as a
+  * Runnable object
+  */
 public class ClientReader implements Runnable, Serializable {
 	private static final long serialVersionUID = 2165989946953642916L;
 	private transient ObjectInputStream in;

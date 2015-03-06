@@ -9,6 +9,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
 import java.util.Queue;
 
+/**
+  * A writer for a Client type object, constantly waiting to write Messages passed to the send
+  * method when run as a Runnable object
+  */
 public class ClientWriter implements Runnable, Serializable {
 	private final Queue<Message> messageQueue = new ConcurrentLinkedQueue<Message>();
 	private final Semaphore availableMessages = new Semaphore(0);

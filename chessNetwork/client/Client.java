@@ -17,6 +17,10 @@ import java.net.UnknownHostException;
 import chessBoard.Move;
 import chessBoard.Promotion;
 
+/**
+  * A Client for the chess application; handles the details of connecting, establishing a game,
+  * joining a game, and sending and receiving Messages
+  */
 public class Client implements Serializable {
 	private static final long serialVersionUID = -4556458826512852351L;
 	private static final int PORT = 9879;
