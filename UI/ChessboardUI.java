@@ -242,6 +242,12 @@ public class ChessboardUI extends JPanel implements Serializable {
 		}
 	}
 	
+	/**
+	 * Attaches a listener to a button for dragging
+	 * @param b The piece attaching the listener to.
+	 * @param host Whether or not the current UI is the game's host.
+	 * @param client A network client.
+	 */
 	public void addDragListener(PieceUI b, final Boolean host, final Client client) {
 		b.addMouseListener(new MouseAdapter() {
 			@Override
@@ -391,16 +397,33 @@ public class ChessboardUI extends JPanel implements Serializable {
 		canMove = true;
 	}
 	
+	/**
+	 * Create a string representation of a square on the board in A1 format.
+	 * @param row The row on the board.
+	 * @param col The column on the board.
+	 * @return The board square representation string.
+	 */
 	private String setSquareRep(int row, int col) {
 		row += 1;
 		char letter = (char) (col + 65);
 		return Character.toString(letter) + Integer.toString(row);
 	}
 	
+	/**
+	 * Get the index of a 2d matrix in 1d array.
+	 * @param row The row on the board.
+	 * @param col The column on the board.
+	 * @return The index in an array.
+	 */
 	private int getComponentIndex(int row, int column) {
 		return row * BOARD_COLS + column;
 	}
 
+	/**
+	 * Move a piece to a new square.
+	 * @param piece The piece being moved.
+	 * @param newSquare The square the piece is moving to.
+	 */
 	private void movePiece(Component piece, JPanel newSquare) {
 		piece.getParent().remove(piece);
 		newSquare.removeAll();
@@ -408,15 +431,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 		board.repaint();
 	}
 	
-	private void uiApplyMove(MouseEvent e) {
-		Component oldComp = e.getComponent();
-		JPanel newComp = (JPanel) getClosestComponent(e);
-		movePiece(oldComp, newComp);
-	}
-
+	/**
+	 * Create a move based on a mouse dragging event on a piece.
+	 * @param e The drag event.
+	 * @return The created move.
+	 */
 	private Move createMove(MouseEvent e) {
 		Component origin = e.getComponent();
 		Container square = origin.getParent();
+		// Get the piece being moved
 		Component oldComp = board.getComponentAt(square.getX(), square.getY());
 		String[] originLocation = oldComp.getName().split(",");
 		int originCol = Integer.parseInt(originLocation[0]);
@@ -436,6 +459,11 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return m;
 	}
 	
+	/**
+	 * Get the closest component the player released the mouse on.
+	 * @param e The drag event.
+	 * @return The component closest to the end of the drag event.
+	 */
 	private Component getClosestComponent(MouseEvent e) {
 		Component c = e.getComponent();
 		Container square = c.getParent();
@@ -445,7 +473,14 @@ public class ChessboardUI extends JPanel implements Serializable {
 		int y = e.getY();
 		return board.getComponentAt(x + comX, y + comY);
 	}
-		
+	
+	/**
+	 * Create a Pawn Piece from a blank button.
+	 * @param button The button turning into a pawn.
+	 * @param row The row on the board.
+	 * @param isHost Determines the color of the piece.
+	 * @return The new Pawn Piece.
+	 */
 	private PieceUI addPawn(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
@@ -469,6 +504,13 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return button;
 	}
 	
+	/**
+	 * Create a Rook Piece from a blank button.
+	 * @param button The button turning into a rook.
+	 * @param row The row on the board.
+	 * @param isHost Determines the color of the piece.
+	 * @return The new Rook Piece.
+	 */
 	private PieceUI addRook(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
@@ -491,6 +533,13 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return button;
 	}
 	
+	/**
+	 * Create a Knight Piece from a blank button.
+	 * @param button The button turning into a knight.
+	 * @param row The row on the board.
+	 * @param isHost Determines the color of the piece.
+	 * @return The new Knight Piece.
+	 */
 	private PieceUI addKnight(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
@@ -513,6 +562,13 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return button;
 	}
 	
+	/**
+	 * Create a Bishop Piece from a blank button.
+	 * @param button The button turning into a bishop.
+	 * @param row The row on the board.
+	 * @param isHost Determines the color of the piece.
+	 * @return The new Bishop Piece.
+	 */
 	private PieceUI addBishop(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
@@ -535,6 +591,13 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return button;
 	}
 	
+	/**
+	 * Create a Queen Piece from a blank button.
+	 * @param button The button turning into a queen.
+	 * @param row The row on the board.
+	 * @param isHost Determines the color of the piece.
+	 * @return The new Queen Piece.
+	 */
 	private PieceUI addQueen(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;
@@ -557,6 +620,13 @@ public class ChessboardUI extends JPanel implements Serializable {
 		return button;
 	}
 	
+	/**
+	 * Create a King Piece from a blank button.
+	 * @param button The button turning into a king.
+	 * @param row The row on the board.
+	 * @param isHost Determines the color of the piece.
+	 * @return The new King Piece.
+	 */
 	private PieceUI addKing(PieceUI button, int row, boolean isHost) throws IOException {
 		BufferedImage buttonIcon;
 		Player playerCode;

@@ -30,7 +30,7 @@ public class ConnectPanel extends JPanel implements Serializable {
 	JPanel timePanel = new JPanel();
 	
 	/**
-	 * Create the panel.
+	 * Create the connection panel.
 	 */
 	public ConnectPanel() {
 		this.setLayout(new GridLayout(0, 1));
@@ -88,6 +88,10 @@ public class ConnectPanel extends JPanel implements Serializable {
 		return this.txtUniqueID.getText();
 	}
 	
+	/**
+	 * Get the whether the user is hosting or joining
+	 * @return Either host or join
+	 */
 	public String getGameType() {
 		Enumeration<AbstractButton> components = this.gameGroup.getElements();
 		while (components.hasMoreElements()) {
@@ -99,6 +103,10 @@ public class ConnectPanel extends JPanel implements Serializable {
 		return "";
 	}
 	
+	/**
+	 * Get the time limit for the game.
+	 * @return The time limit for the game.
+	 */
 	public String getTime() {
 		Enumeration<AbstractButton> components = this.timeGroup.getElements();
 		while (components.hasMoreElements()) {
