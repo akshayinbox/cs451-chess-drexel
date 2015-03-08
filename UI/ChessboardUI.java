@@ -486,15 +486,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 		Player playerCode;
 		if (row == 1) {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/BrownP_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownP_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/WhiteP_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteP_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/WhiteP_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteP_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/BrownP_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownP_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		
@@ -516,15 +516,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 		Player playerCode;
 		if (row == 0) {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/BrownR_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownR_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/WhiteR_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteR_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/WhiteR_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteR_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/BrownR_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownR_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -545,15 +545,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 		Player playerCode;
 		if (row == 0) {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/BrownN_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownN_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/WhiteN_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteN_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/WhiteN_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteN_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/BrownN_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownN_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -574,15 +574,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 		Player playerCode;
 		if (row == 0) {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/BrownB_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownB_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/WhiteB_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteB_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/WhiteB_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteB_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/BrownB_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownB_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -603,15 +603,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 		Player playerCode;
 		if (row == 0) {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/BrownQ_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownQ_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/WhiteQ_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteQ_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/WhiteQ_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteQ_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/BrownQ_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownQ_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
@@ -632,15 +632,15 @@ public class ChessboardUI extends JPanel implements Serializable {
 		Player playerCode;
 		if (row == 0) {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/BrownK_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownK_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/WhiteK_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteK_board.png"));
 			playerCode = Player.PLAYER2;
 		} else {
 			if (isHost)
-				buttonIcon = ImageIO.read(new File("pieces/WhiteK_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/WhiteK_board.png"));
 			else
-				buttonIcon = ImageIO.read(new File("pieces/BrownK_board.png"));
+				buttonIcon = ImageIO.read(getClass().getResource("/pieces/BrownK_board.png"));
 			playerCode = Player.PLAYER1;
 		}
 		button.setIcon(new ImageIcon(buttonIcon));
