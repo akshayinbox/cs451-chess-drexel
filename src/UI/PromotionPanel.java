@@ -70,16 +70,16 @@ public class PromotionPanel extends JPanel implements Serializable {
 		Player playerCode = Player.PLAYER1;
 		
 		if (host){
-			knightButtonIcon = ImageIO.read(new File("pieces/WhiteN_board.png"));
-			bishopButtonIcon = ImageIO.read(new File("pieces/WhiteB_board.png"));
-			rookButtonIcon = ImageIO.read(new File("pieces/WhiteR_board.png"));
-			queenButtonIcon = ImageIO.read(new File("pieces/WhiteQ_board.png"));
+			knightButtonIcon = ImageIO.read(getClass().getResource("pieces/WhiteN_board.png"));
+			bishopButtonIcon = ImageIO.read(getClass().getResource("pieces/WhiteB_board.png"));
+			rookButtonIcon = ImageIO.read(getClass().getResource("pieces/WhiteR_board.png"));
+			queenButtonIcon = ImageIO.read(getClass().getResource("pieces/WhiteQ_board.png"));
 			
 		} else {
-			knightButtonIcon = ImageIO.read(new File("pieces/BrownN_board.png"));
-			bishopButtonIcon = ImageIO.read(new File("pieces/BrownB_board.png"));
-			rookButtonIcon = ImageIO.read(new File("pieces/BrownR_board.png"));
-			queenButtonIcon = ImageIO.read(new File("pieces/BrownQ_board.png"));
+			knightButtonIcon = ImageIO.read(getClass().getResource("pieces/BrownN_board.png"));
+			bishopButtonIcon = ImageIO.read(getClass().getResource("pieces/BrownB_board.png"));
+			rookButtonIcon = ImageIO.read(getClass().getResource("pieces/BrownR_board.png"));
+			queenButtonIcon = ImageIO.read(getClass().getResource("pieces/BrownQ_board.png"));
 		}
 		btnKnight.setIcon(new ImageIcon(knightButtonIcon));
 		btnKnight.setPlayer(playerCode);
