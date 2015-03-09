@@ -65,9 +65,4 @@
             </fileset>
         </jar>
     </target>
-
-    <target name="run">
-        <java jar="build/jar/HelloWorld.jar" fork="true"/>
-    </target>
-
 </project>
