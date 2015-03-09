@@ -58,16 +58,11 @@
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/ChessOfChampions.jar" basedir="build/classes">
             <manifest>
-                <attribute name="Main-Class" value="Test"/>
+                <attribute name="Main-Class" value="Driver"/>
             </manifest>
             <fileset dir="src">
                 <include name="pieces/*.png"/>
             </fileset>
         </jar>
     </target>
-
-    <target name="run">
-        <java jar="build/jar/HelloWorld.jar" fork="true"/>
-    </target>
-
 </project>
