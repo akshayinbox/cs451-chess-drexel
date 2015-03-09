@@ -35,10 +35,15 @@
         <javac srcdir="src" destdir="${classes.dir}">
             <classpath refid="classpath" />
         </javac>
+
+         <copy todir="build/classes/pieces">
+            <fileset dir="${src.dir}/pieces"/>
+        </copy>
+
     </target>
 
     <target name="test" depends="compile">
-     <junit fork="yes" showoutput="true" printsummary="yes" haltonfailure="yes">
+     <junit fork="yes" showoutput="true" printsummary="yes" haltonfailure="no">
      <classpath refid="classpath" />   
      <formatter type="brief" usefile="false"/>
         <batchtest>
