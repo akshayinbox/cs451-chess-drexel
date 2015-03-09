@@ -766,20 +766,23 @@ public class UI implements MessageProcessor, Serializable {
 		String text = "Your move.";
 		int type = JOptionPane.PLAIN_MESSAGE;
 		ChessBoard chessBoard = boardUI.getChessBoard();
-		if (chessBoard.kingInCheck()) {
-			text = "You are in check.";
-			GameStatus gameOver = chessBoard.gameOver();
-			if (gameOver == GameStatus.CHECKMATE) {
-				text = "Checkmate! You lose.";
-				boardUI.setCanMove(false);
-				client.sendEnd("Checkmate! You Win!");
-			}
-			else if (gameOver == GameStatus.STALEMATE) {
-				text = "Stalemate!";
-				boardUI.setCanMove(false);
-				client.sendEnd("Stalemate!");
-			}
+		
+		GameStatus gameOver = chessBoard.gameOver();
+		if (gameOver == GameStatus.STALEMATE) {
+			text = "Stalemate!";
+			boardUI.setCanMove(false);
+			client.sendEnd("Stalemate!");
 			type = JOptionPane.WARNING_MESSAGE;
+		} else if (gameOver == GameStatus.CHECKMATE) {
+			text = "Checkmate! You lose.";
+			boardUI.setCanMove(false);
+			client.sendEnd("Checkmate! You Win!");
+			type = JOptionPane.WARNING_MESSAGE;
+		} else {
+			if (chessBoard.kingInCheck()) {
+				text = "You are in check.";
+				type = JOptionPane.WARNING_MESSAGE;
+			}
 		}
 		JOptionPane.showMessageDialog(frame,
 			    text,
