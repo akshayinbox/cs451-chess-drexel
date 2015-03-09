@@ -61,7 +61,7 @@
                 <attribute name="Main-Class" value="Driver"/>
             </manifest>
             <fileset dir="src">
-                <include name="pieces/*.png"/>
+                <!--<include name="pieces/*.png"/>-->
             </fileset>
         </jar>
     </target>
