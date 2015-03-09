@@ -49,7 +49,7 @@
       </junit>
     </target> 
 
-    <target name="jar">
+    <target name="jar" depends="compile">
         <mkdir dir="build/jar"/>
         <jar destfile="build/jar/ChessOfChampions.jar" basedir="build/classes">
             <manifest>
