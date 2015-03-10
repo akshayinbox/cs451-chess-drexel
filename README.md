@@ -5,9 +5,12 @@ BUILD INSTRUCTIONS:
 
 1. run the command "ant jar"
 2. run the command "java -jar ChessOfChampions.jar" 
-
+3. The built .jar file is now inside of build/jar. 
 
 PLAY INSTRUCTIONS:
+
+Launching App:
+1. Double click the jar file to open the game.
 
 Hosting:
 1. Hit "Connect" in the top left corner.
