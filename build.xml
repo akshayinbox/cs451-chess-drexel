@@ -59,9 +59,23 @@
             <manifest>
                 <attribute name="Main-Class" value="Driver"/>
             </manifest>
-            <fileset dir="${src.dir}">
-                <!--<include name="pieces/*.png"/>-->
-            </fileset>
         </jar>
+
+		<!--Note about exclusions: Pawns and Kings can never be sent as Promotions, so can safely be
+		    excluded. The Server does not need to deal with MessageProcessors either, so that can be
+		excluded.-->
+		<jar destfile="${jar.dir}/ChessServer.jar" basedir="${classes.dir}"
+		     includes="chessNetwork/server/**
+                       chessNetwork/messages/**
+                       chessBoard/**
+                       UI/*PieceUI*
+                       chessPieces/**"
+		     excludes="chessPieces/*Pawn*
+                       chessPieces/*King*
+					   chessNetwork/messages/*MessageProcessor*">
+			<manifest>
+				<attribute name="Main-Class" value="chessNetwork.server.Server"/>
+			</manifest>
+		</jar>
     </target>
 </project>
